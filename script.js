@@ -166,5 +166,21 @@ var tests = {
     ZapatosIguales: {
         title: "Zapatos Iguales",
         description: "Hazte una foto con alguien que tenga los zapatos del mismo color que tú",
+        url: "https://wetalkai.github.io/event_front?tipoPrueba=ZapatosIguales"
+    },
+    NoConocidoLugarDeOrigen: {
+        title: "Lugar de origen",
+        description: "Hazte una foto con alguien que no conozcas pero que haya nacido en el mismo mes que tú",
+        url: "https://wetalkai.github.io/event_front?tipoPrueba=NoConocidoLugarDeOrigen"
+    },
+    MismaAficion: {
+        title: "Misma afición",
+        description: "Hazte una foto con alguien que tenga la misma afición que tú (en la foto haced un gesto que lo demuestre)",
+        url: "https://wetalkai.github.io/event_front?tipoPrueba=MismaAficion"
+    },
+    MuchasCaras: {
+        title: "Muchas caras!",
+        description: "Haz una foto que aparezcáis 5 personas diferentes",
+        url: "https://wetalkai.github.io/event_front?tipoPrueba=MuchasCaras"
     }
 }
