@@ -1,3 +1,6 @@
+const localDomain = 'http://localhost:3008';
+const remoteDomain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
+var domain = remoteDomain;
 document.getElementById('capture').addEventListener('click', function () {
     const canvas = document.getElementById('canvas');
     const video = document.getElementById('webcam');
@@ -50,7 +53,7 @@ document.getElementById('send').addEventListener('click', function () {
         formData.append('tipoPrueba', tipoPrueba);
         console.log('tipoPrueba', tipoPrueba);
         // Asume que el servidor está corriendo en localhost:3000 y acepta POST en /upload
-        fetch('http://localhost:3008/upload', { // Asegúrate de usar el puerto correcto que estés escuchando
+        fetch(domain + '/upload', { // Asegúrate de usar el puerto correcto que estés escuchando
             method: 'POST',
             body: formData,
         })
@@ -60,23 +63,23 @@ document.getElementById('send').addEventListener('click', function () {
                 if (data.ok) {
                     const photoControls = document.getElementById('photoControls');
                     photoControls.style.display = 'none';
-                    
+
                     document.getElementById('descriptionTest').innerHTML = "Gracias! Tu prueba ha sido enviada. Consulta el progreso para saber cuánto falta para conseguir el premio!";
                     document.getElementById('loadModel').style.display = 'block';
                     this.style.display = 'none'; // Ocultar botón de captura
-                
+
                 } else {
-                    console.log ("data", data)
+                    console.log("data", data)
                     alert('Error al enviar la foto, ', data.error)
                 }
                 // Opcional: Acciones posteriores al envío exitoso
             })
             .catch(data => {
-                
+
                 alert('Hubo un problema, intentalo más tarde')
-                
+
             });
-    },'image/jpeg', 0.85);
+    }, 'image/jpeg', 0.85);
 });
 
 
@@ -93,10 +96,10 @@ document.getElementById('loadModel').addEventListener('click', function () {
     modelViewerContainer = document.createElement('div');
     modelViewerContainer.id = 'modelViewerContainer';
     modelViewerContainer.style.position = 'fixed';
-    modelViewerContainer.style.top = '0';
+    modelViewerContainer.style.top = '10%';
     modelViewerContainer.style.left = '0';
     modelViewerContainer.style.width = '100vw';
-    modelViewerContainer.style.height = '100vh';
+    modelViewerContainer.style.height = '80%';
     modelViewerContainer.style.zIndex = '1000';
     modelViewerContainer.style.display = 'flex';
     modelViewerContainer.style.justifyContent = 'center';
@@ -108,8 +111,10 @@ document.getElementById('loadModel').addEventListener('click', function () {
     closeButton.innerText = 'X';
     closeButton.style.position = 'absolute';
     closeButton.style.top = '10px';
-    closeButton.style.left = '10px';
+    closeButton.style.left = '20px';
     closeButton.style.zIndex = '1001';
+    closeButton.style.width = '50px';
+    closeButton.style.height = '50px';
 
     // Evento para cerrar el model-viewer
     closeButton.addEventListener('click', function () {
@@ -120,9 +125,32 @@ document.getElementById('loadModel').addEventListener('click', function () {
     const modelViewer = document.createElement('model-viewer');
     modelViewer.style.width = '100%';
     modelViewer.style.height = '100%';
-    modelViewer.setAttribute('src', 'http://localhost:3008/baseGltf/modified_cube.gltf');
+    modelViewer.setAttribute('src', domain + '/baseGltf/modified_cube.gltf');
     modelViewer.setAttribute('auto-rotate', '');
     modelViewer.setAttribute('camera-controls', '');
+    modelViewer.setAttribute('ar', '');
+    modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+    modelViewer.setAttribute('shadow-intensity', '1');
+
+
+    // Crea el botón para la realidad aumentada
+    const arButton = document.createElement('button');
+    arButton.setAttribute('slot', 'ar-button'); // Asigna el slot 'ar-button'
+    arButton.id = 'ar-button';
+    arButton.textContent = 'View in your space';
+
+    // Crea el contenedor para la imagen de 'hand' que indica cómo usar la realidad aumentada
+    const arPrompt = document.createElement('div');
+    arPrompt.id = 'ar-prompt';
+
+    // Crea la imagen y la añade al contenedor de ar-prompt
+    const handImage = document.createElement('img');
+    handImage.src = 'https://modelviewer.dev/shared-assets/icons/hand.png';
+    arPrompt.appendChild(handImage);
+
+    // Añade el botón de AR y el contenedor ar-prompt al model-viewer
+    modelViewer.appendChild(arButton);
+    modelViewer.appendChild(arPrompt);
 
     // Añade el botón de cierre y el model-viewer al contenedor
     modelViewerContainer.appendChild(closeButton);
