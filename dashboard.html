@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <link href="styles.css" rel="stylesheet">
+    <title>Control del servidor</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <!-- Añade aquí cualquier otra configuración o archivo CSS necesario -->
+</head>
+
+<body>
+    <h1>Panel de control del servidor</h1>
+    <button onclick="resetServer()">Resetear Contador de Cubos</button>
+    <button onclick="getCubesCount()">Obtener Cantidad de Cubos</button>
+    <button onclick="getServerState()">Comprobar Estado del Servidor</button>
+    <button onclick="showModel()">ShowModel</button>
+
+    <script>
+        const remoteDomain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
+        function resetServer() {
+            fetch(remoteDomain + '/reset', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function getCubesCount() {
+            fetch(remoteDomain + '/getCount')
+                .then(response => response.json())
+                .then(data => alert('Cantidad de cubos generados: ' + data.count))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function getServerState() {
+            fetch(remoteDomain + '/getState')
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function showModel() {
+
+            // Crea el contenedor para el model-viewer si no existe
+
+            modelViewerContainer = document.createElement('div');
+            modelViewerContainer.id = 'modelViewerContainer';
+            modelViewerContainer.style.position = 'fixed';
+            modelViewerContainer.style.top = '10%';
+            modelViewerContainer.style.left = '0';
+            modelViewerContainer.style.width = '100vw';
+            modelViewerContainer.style.height = '80%';
+            modelViewerContainer.style.zIndex = '1000';
+            modelViewerContainer.style.display = 'flex';
+            modelViewerContainer.style.justifyContent = 'center';
+            modelViewerContainer.style.alignItems = 'center';
+            modelViewerContainer.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+
+            // Crea el botón de cierre
+            const closeButton = document.createElement('button');
+            closeButton.innerText = 'X';
+            closeButton.style.position = 'absolute';
+            closeButton.style.top = '10px';
+            closeButton.style.left = '20px';
+            closeButton.style.zIndex = '1001';
+            closeButton.style.width = '50px';
+            closeButton.style.height = '50px';
+
+            // Evento para cerrar el model-viewer
+            closeButton.addEventListener('click', function () {
+                modelViewerContainer.remove();
+            });
+
+            // Crea el model-viewer
+            const modelViewer = document.createElement('model-viewer');
+            modelViewer.style.width = '100%';
+            modelViewer.style.height = '100%';
+            modelViewer.setAttribute('src', remoteDomain + '/baseGltf/modified_cube.gltf');
+            modelViewer.setAttribute('auto-rotate', '');
+            modelViewer.setAttribute('camera-controls', '');
+            modelViewer.setAttribute('ar', '');
+            modelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
+            modelViewer.setAttribute('shadow-intensity', '1');
+
+
+            // Crea el botón para la realidad aumentada
+            const arButton = document.createElement('button');
+            arButton.setAttribute('slot', 'ar-button'); // Asigna el slot 'ar-button'
+            arButton.id = 'ar-button';
+            arButton.textContent = 'View in your space';
+
+            // Crea el contenedor para la imagen de 'hand' que indica cómo usar la realidad aumentada
+            const arPrompt = document.createElement('div');
+            arPrompt.id = 'ar-prompt';
+
+            // Crea la imagen y la añade al contenedor de ar-prompt
+            const handImage = document.createElement('img');
+            handImage.src = 'https://modelviewer.dev/shared-assets/icons/hand.png';
+            arPrompt.appendChild(handImage);
+
+            // Añade el botón de AR y el contenedor ar-prompt al model-viewer
+            modelViewer.appendChild(arButton);
+            modelViewer.appendChild(arPrompt);
+
+            // Añade el botón de cierre y el model-viewer al contenedor
+            modelViewerContainer.appendChild(closeButton);
+            modelViewerContainer.appendChild(modelViewer);
+
+            // Añade el contenedor al body del documento
+            document.body.appendChild(modelViewerContainer);
+
+
+        }
+    </script>
+</body>
+
+</html>
