@@ -36,7 +36,11 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log(tipoPrueba);
     console.log(window.tests);
     document.getElementById('titleTest').innerHTML = window.tests[tipoPrueba].title;
+    
     document.getElementById('descriptionTest').innerHTML = window.tests[tipoPrueba].description;
+    if (tipoPrueba == "emojis") {
+        document.getElementById('descriptionTest').style.fontSize = "100px";
+    }
 
 })
 

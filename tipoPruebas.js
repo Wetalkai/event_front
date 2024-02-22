@@ -28,5 +28,11 @@ window.tests = {
         description: "Haz una foto de dos emperadores romanos, uno ordenando la muerte del gladiador y otro su perdón!",
         baseIndex: "emperadores_romanos.html",
         url: "https://wetalkai.github.io/event_front?tipoPrueba=emperadoresromanos"
+    },
+    emojis: {
+        title: "Emojis!",
+        description: "😲 😲",
+        baseIndex: "emojis.html",
+        url: "https://wetalkai.github.io/event_front?tipoPrueba=emojis"
     }
 }
