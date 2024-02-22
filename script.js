@@ -2,7 +2,7 @@ const localDomain = 'http://localhost:3008';
 const remoteDomain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
 var domain = remoteDomain;
 document.getElementById('capture').addEventListener('click', function () {
-    const canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('canvasPhoto');
     const video = document.getElementById('webcam');
     const photoControls = document.getElementById('photoControls');
     const capturedPhoto = document.getElementById('capturedPhoto');
@@ -34,14 +34,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const urlParams = new URLSearchParams(queryString);
     const tipoPrueba = urlParams.get('tipoPrueba');
     console.log(tipoPrueba);
-    document.getElementById('titleTest').innerHTML = tests[tipoPrueba].title;
-    document.getElementById('descriptionTest').innerHTML = tests[tipoPrueba].description;
+    console.log(window.tests);
+    document.getElementById('titleTest').innerHTML = window.tests[tipoPrueba].title;
+    document.getElementById('descriptionTest').innerHTML = window.tests[tipoPrueba].description;
 
 })
 
 // Botón enviar: Envía la foto al servidor y oculta los controles
 document.getElementById('send').addEventListener('click', function () {
-    const canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('canvasPhoto');
     canvas.toBlob(blob => {
         const formData = new FormData();
         formData.append('image', blob, 'foto.jpg');
@@ -161,7 +162,7 @@ document.getElementById('loadModel').addEventListener('click', function () {
 
 });
 
-
+/*
 var tests = {
     ZapatosIguales: {
         title: "Zapatos Iguales",
@@ -184,3 +185,4 @@ var tests = {
         url: "https://wetalkai.github.io/event_front?tipoPrueba=MuchasCaras"
     }
 }
+*/

@@ -65,10 +65,10 @@ body, html {
   .modal-content {
     position: relative;
     background-color: #fefefe;
-    margin: 15% auto;
+    margin: 25% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 80%;
+    width: 90%;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   }
   
@@ -104,13 +104,7 @@ body, html {
     overflow: hidden; /* Oculta cualquier contenido que se desborde */
 }
 
-/* Estilos para la imagen capturada dentro del modal */
-#capturedPhoto {
-   
-    max-width: 100%; /* Evita que la imagen sea más ancha que el modal */
-    max-height: 100%; /* Evita que la imagen sea más alta que el modal */
-    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
-}
+
 /* Ajusta la altura del modal-body para que sea igual al ancho */
 .modal-body::before {
     content: "";
@@ -125,14 +119,21 @@ body, html {
     clear: both;
 }
 
-#capturedPhoto::after {
-   
-    width: 100%; /* Evita que la imagen sea más ancha que el modal */
-    height: 100%; /* Evita que la imagen sea más alta que el modal */
-    object-fit: cover; /* Asegura que la imagen cubra el área sin distorsionarse */
+#capturedPhoto {
+   height: 100%!important;
+   width: 100%!important;
+   position: absolute;
+    
 }
 
+.modal-footer {
+  justify-content:center!important
+}
 
+#closeBtnPhoto {
+  border-style:ridge!important;
+  border:red!important;
+}
 
 model-viewer {
     width: 100%;
