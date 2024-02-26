@@ -13,7 +13,7 @@ if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWi
     // Si se está ejecutando en localhost o en una red local
     //domainHttp = `http://${hostname}:${port || '3008'}`;
     domain = `http://${hostname}:3008`;
-    alert("domain: " + domain)
+    
 } else {
     // Si se está ejecutando en el servidor de producción
     domain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
