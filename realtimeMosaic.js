@@ -54,7 +54,7 @@ function checkForUpdates() {
 
 function showMainQR() {
     var url = "http://"+hostname+":"+port +extraDomain+ "/realTimeMosaic.html";
-
+alert(url)
     console.log("show modal " + url);
 
     document.getElementById("qrcode").innerHTML = '';
