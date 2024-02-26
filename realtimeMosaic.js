@@ -13,7 +13,7 @@ if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWi
 } else {
     // Si se está ejecutando en el servidor de producción
     domainHttp = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
-    extraDomain = "event_front";
+    extraDomain = "/event_front";
 }
 
 
