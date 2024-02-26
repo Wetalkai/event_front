@@ -4,6 +4,7 @@ var domainHttp = ""
 // Detecta el dominio actual automáticamente
 const hostname = window.location.hostname;
 const port = window.location.port; // Extrae el puerto
+var extraDomain = "";
 
 if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWith("192.")) {
     // Si se está ejecutando en localhost o en una red local
@@ -12,6 +13,7 @@ if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWi
 } else {
     // Si se está ejecutando en el servidor de producción
     domainHttp = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
+    extraDomain = "event_front";
 }
 
 
@@ -51,7 +53,7 @@ function checkForUpdates() {
 }
 
 function showMainQR() {
-    var url = "http://"+hostname+":"+port + "/realTimeMosaic.html";
+    var url = "http://"+hostname+":"+port +extraDomain+ "/realTimeMosaic.html";
 
     console.log("show modal " + url);
 
