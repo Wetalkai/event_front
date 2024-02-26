@@ -34,5 +34,17 @@ window.tests = {
         description: "😲 😲",
         baseIndex: "emojis.html",
         url: "https://wetalkai.github.io/event_front?tipoPrueba=emojis"
+    },
+    entornoAr: {
+        title: "Foto con un cuadro!",
+        description: "Hazte una foto con un cuadro en el que aparezca la anfitriona",
+        baseIndex: "ar_portal.html",
+        url: "https://wetalkai.github.io/event_front?tipoPrueba=arportal"
+    },
+    gritaAlto: {
+        title: "Que se te escuche!",
+        description: "No dejes que nadie te calle... y hazte una foto",
+        baseIndex: "grita_alto.html",
+        url: "https://wetalkai.github.io/event_front?tipoPrueba=gritaAlto"
     }
 }

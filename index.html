@@ -9,22 +9,34 @@
 </head>
 
 <body>
+    <select id="selectorPrueba">
+        <option value="">Selecciona una prueba...</option>
+        <!-- Las opciones se llenarán con JavaScript -->
+    </select>
     <script>
-        
         document.addEventListener('DOMContentLoaded', function () {
-            // Función para obtener el valor de un parámetro específico de la URL
-            function getQueryParam(param) {
-                const urlParams = new URLSearchParams(window.location.search);
-                return urlParams.get(param);
+            const selectorPrueba = document.getElementById('selectorPrueba');
+            
+            // Rellenar el dropdown con las pruebas
+            for (const prueba in tests) {
+                if (tests.hasOwnProperty(prueba)) {
+                    const option = document.createElement('option');
+                    option.value = prueba;
+                    option.textContent = tests[prueba].title;
+                    selectorPrueba.appendChild(option);
+                }
             }
-
-            // Leer el parámetro 'tipoPrueba' de la URL
-            const tipoPrueba = getQueryParam('tipoPrueba').toLowerCase();;
-            console.log('Tipo de prueba:', tipoPrueba);
-
-            window.location.href = tests[tipoPrueba].baseIndex + "?tipoPrueba=" + tipoPrueba;
+    
+            // Manejar la selección de una prueba
+            selectorPrueba.addEventListener('change', function() {
+                const tipoPrueba = this.value;
+                if (tipoPrueba) {
+                    window.location.href = tests[tipoPrueba].baseIndex + "?tipoPrueba=" + tipoPrueba;
+                }
+            });
         });
     </script>
+    
 </body>
 
 </html>

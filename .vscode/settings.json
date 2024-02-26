@@ -1,0 +1,8 @@
+{
+    "liveServer.settings.https": {
+        "enable": true, //set it true to enable the feature.
+        "cert": "/Users/alejandro/Documents/ThreeJs/WeWork/Evento Silvia/front/server2.csr", //full path of the certificate
+        "key": "/Users/alejandro/Documents/ThreeJs/WeWork/Evento Silvia/front/server2.key", //full path of the private key
+        "passphrase": "qqqqqq"
+    }
+}

@@ -1,12 +1,32 @@
-const localDomain = 'http://localhost:3008';
-const remoteDomain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
-var domain = remoteDomain;
+//const localDomain = 'http://localhost:3008';
+//const localDomainMobile = 'http://192.168.5.157:3008';
+//const remoteDomain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
+
+
+var domain = ""
+    
+// Detecta el dominio actual automáticamente
+const hostname = window.location.hostname;
+const port = window.location.port; // Extrae el puerto
+
+if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWith("192.")) {
+    // Si se está ejecutando en localhost o en una red local
+    //domainHttp = `http://${hostname}:${port || '3008'}`;
+    domain = `http://${hostname}:3008`;
+    alert("domain: " + domain)
+} else {
+    // Si se está ejecutando en el servidor de producción
+    domain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
+}
+
+
 document.getElementById('capture').addEventListener('click', function () {
+    
     const canvas = document.getElementById('canvasPhoto');
     const video = document.getElementById('webcam');
     const photoControls = document.getElementById('photoControls');
     const capturedPhoto = document.getElementById('capturedPhoto');
-
+    
     canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
     const photoURL = canvas.toDataURL('image/png');
     capturedPhoto.src = photoURL;
@@ -33,8 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const tipoPrueba = urlParams.get('tipoPrueba');
-    console.log(tipoPrueba);
-    console.log(window.tests);
+
     document.getElementById('titleTest').innerHTML = window.tests[tipoPrueba].title;
     
     document.getElementById('descriptionTest').innerHTML = window.tests[tipoPrueba].description;
@@ -165,6 +184,17 @@ document.getElementById('loadModel').addEventListener('click', function () {
     document.body.appendChild(modelViewerContainer);
 
 });
+
+function toggleCamera() {
+    useFrontCamera = !useFrontCamera; // Alternar entre true y false
+    getCameraStream().then(stream => {
+        currentStream = stream;
+        const videoElement = document.getElementById('webcam');
+        videoElement.srcObject = stream;
+    }).catch(error => {
+        console.error("Error al obtener acceso a la cámara: ", error);
+    });
+}
 
 /*
 var tests = {

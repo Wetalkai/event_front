@@ -10,6 +10,8 @@
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script src="tipoPruebas.js"></script>
     <script src="https://www.onirix.com/webar/ox-devicemotion.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
 </head>
 <body class="bg-dark text-white">
     <div class="container">
@@ -18,8 +20,8 @@
         <!-- Espacio reservado para la imagen de la cámara -->
         <div class="d-flex justify-content-center">
             <div class="camera-container">
-                <iframe class="webcamC" src="https://studio.onirix.com/projects/cb41cc784d9d4792ba2362616cc2ee87/webar?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjM1MzgyLCJwcm9qZWN0SWQiOjcwODYxLCJyb2xlIjozLCJpYXQiOjE3MDg2MTQ1ODB9.sKBDvvmTAO9KzsLCPPcPzqAfkLd8B3K_I5Nz08AdmkA&background=alpha&preview=false&hide_controls=false&ar_button=true" allow="camera;gyroscope;accelerometer;magnetometer;fullscreen;xr-spatial-tracking;geolocation;"></iframe>
-                <video id="webcam" autoplay playsinline></video>
+                <iframe id="webcam" style="position:fixed;top:0;left:0; right:0;bottom:0;z-index:-1;max-width:100vw;width:100%;height:100%; display:block;border:none;" src="https://studio.onirix.com/projects/cb41cc784d9d4792ba2362616cc2ee87/webar?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjM1MzgyLCJwcm9qZWN0SWQiOjcwODYxLCJyb2xlIjozLCJpYXQiOjE3MDg2MTQ1ODB9.sKBDvvmTAO9KzsLCPPcPzqAfkLd8B3K_I5Nz08AdmkA&background=alpha&preview=false&hide_controls=false&ar_button=false" allow="camera;gyroscope;accelerometer;magnetometer;fullscreen;xr-spatial-tracking;geolocation;"></iframe>
+                <!--video id="webcam" autoplay playsinline></video-->
             </div>
         </div>
 
@@ -27,7 +29,7 @@
         
         <!-- Botones de acción -->
         <div class="d-flex justify-content-around my-4">
-            <button id="capture" class="btn btn-primary">
+            <button id="capture" class="btn btn-primary" style="position:absolute;bottom:10%">
                 <i class="fa fa-camera"></i>
             </button>
             
