@@ -4,7 +4,7 @@
 
 
 var domain = ""
-    
+
 // Detecta el dominio actual automáticamente
 const hostname = window.location.hostname;
 const port = window.location.port; // Extrae el puerto
@@ -13,7 +13,7 @@ if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWi
     // Si se está ejecutando en localhost o en una red local
     //domainHttp = `http://${hostname}:${port || '3008'}`;
     domain = `http://${hostname}:3008`;
-    
+
 } else {
     // Si se está ejecutando en el servidor de producción
     domain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
@@ -21,21 +21,51 @@ if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWi
 
 
 document.getElementById('capture').addEventListener('click', function () {
-    
-    const canvas = document.getElementById('canvasPhoto');
     const video = document.getElementById('webcam');
+    const canvas = document.getElementById('canvasPhoto');
     const photoControls = document.getElementById('photoControls');
     const capturedPhoto = document.getElementById('capturedPhoto');
-    
-    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Determinar las dimensiones para el recorte centrado
+    const videoWidth = video.videoWidth;
+    const videoHeight = video.videoHeight;
+    const size = Math.min(videoWidth, videoHeight); // El lado más corto para el cuadrado
+
+    // Ajustar el canvas al tamaño cuadrado necesario
+    canvas.width = size;
+    canvas.height = size;
+
+    // Calcular el inicio del recorte para centrarlo
+    const startX = (videoWidth - size) / 2;
+    const startY = (videoHeight - size) / 2;
+
+    // Obtener el contexto y recortar la imagen del video centrada en el canvas
+    const context = canvas.getContext('2d');
+    context.drawImage(video, startX, startY, size, size, 0, 0, canvas.width, canvas.height);
+
+    // Crear un gradiente radial para el efecto de iluminación
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = Math.max(canvas.width, canvas.height) / 2; // El radio debe ser suficiente para cubrir el centro
+
+    const gradient = context.createRadialGradient(centerX, centerY, radius / 10, centerX, centerY, radius);
+    gradient.addColorStop(0, 'rgba(255, 255, 100, 0.2)'); // Color amarillo claro y más sutil en el centro
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // Transparencia hacia los bordes
+
+    // Aplicar el gradiente sobre la imagen
+    context.globalCompositeOperation = 'lighter'; // Modo de mezcla que ilumina los colores
+    context.fillStyle = gradient;
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    // Convertir a imagen y mostrar
     const photoURL = canvas.toDataURL('image/png');
     capturedPhoto.src = photoURL;
 
-    // Mostrar los controles de la foto y ocultar la webcam
+    // Mostrar los controles de la foto y ocultar la webcam y el botón de captura
     photoControls.style.display = 'block';
     video.style.display = 'none';
-    this.style.display = 'none'; // Ocultar botón de captura
+    this.style.display = 'none';
 });
+
 
 
 // Botón cerrar: Oculta la imagen capturada y muestra la webcam de nuevo
@@ -43,10 +73,12 @@ document.getElementById('closeBtnPhoto').addEventListener('click', function () {
     const video = document.getElementById('webcam');
     const photoControls = document.getElementById('photoControls');
     const captureButton = document.getElementById('capture');
+    const toggleCamera = document.getElementById('toggleCamera');
 
     photoControls.style.display = 'none';
     video.style.display = 'block';
     captureButton.style.display = 'block';
+    toggleCamera.style.display = 'block';
 });
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -55,7 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const tipoPrueba = urlParams.get('tipoPrueba');
 
     document.getElementById('titleTest').innerHTML = window.tests[tipoPrueba].title;
-    
+
     document.getElementById('descriptionTest').innerHTML = window.tests[tipoPrueba].description;
     if (tipoPrueba == "emojis") {
         document.getElementById('descriptionTest').style.fontSize = "100px";
@@ -91,6 +123,9 @@ document.getElementById('send').addEventListener('click', function () {
                     document.getElementById('descriptionTest').innerHTML = "Gracias! Tu prueba ha sido enviada. Consulta el progreso para saber cuánto falta para conseguir el premio!";
                     document.getElementById('loadModel').style.display = 'block';
                     this.style.display = 'none'; // Ocultar botón de captura
+                    document.getElementById('capture').style.display = 'none';
+                    document.getElementById('toggleCamera').style.display = 'none';
+
 
                 } else {
                     console.log("data", data)

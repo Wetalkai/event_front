@@ -1,0 +1,16 @@
+<div id="box-width" class="col-md-6"></div>
+<div id="camera" class="col-md-6">
+  <video id="camera-view" width="1280" height="720" autoplay playsinline></video>
+  <br />Webcam video contained to appear square<br />
+  <button onclick="TakeSnapshot()">SNAPSHOT</button>
+</div>
+<div id="result" class="col-md-6">
+  <canvas id="user-photo" width="375" height="375"></canvas>
+  <br />Webcam saved to a regular canvas at 1:1 ratio<br />
+  <button onclick="UseImage()">USE IMAGE?</button>
+</div>
+<div id="fabric" class="col-md-6">
+  <canvas id="photo-adjust" width="375" height="375"></canvas>
+  <br />Our fabricjs Canvas at 1:1 ratio<br />
+  <button onclick="WebcamSetup()">GO AGAIN</button>
+</div>

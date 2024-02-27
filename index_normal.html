@@ -9,6 +9,7 @@
     <title>Prueba de Foto y Model Viewer</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script src="tipoPruebas.js"></script>
+    <script src="toggle_camera.js"></script>
 </head>
 <body class="bg-dark text-white">
     <div class="container">
@@ -17,7 +18,14 @@
         <!-- Espacio reservado para la imagen de la cámara -->
         <div class="d-flex justify-content-center">
             <div class="camera-container">
+                <button id="toggleCamera" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i> 
+                </button>
+                <button id="capture" class="btn btn-primary">
+                    <i class="fa fa-camera"></i>
+                </button>
                 <video id="webcam" autoplay playsinline></video>
+               
             </div>
         </div>
 
@@ -25,9 +33,8 @@
         
         <!-- Botones de acción -->
         <div class="d-flex justify-content-around my-4">
-            <button id="capture" class="btn btn-primary">
-                <i class="fa fa-camera"></i>
-            </button>
+            
+            
             
             
             <button id="loadModel" class="btn btn-success" style="display: none;">Progreso</button>
@@ -53,12 +60,14 @@
     <div id="photoControls" class="modal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <button id="closeBtnPhoto" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button id="closeBtnPhoto" type="button" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fa fa-times-circle"></i>
+                </button>
                 <div class="modal-body">
                     <img id="capturedPhoto">
                 </div>
                 <div class="modal-footer">
-                    <button id="send" class="btn btn-primary">Enviar</button>
+                    <button id="send" class="btn btn-primary">ENVIAR</button>
                 </div>
             </div>
         </div>

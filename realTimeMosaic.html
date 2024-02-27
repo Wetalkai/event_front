@@ -7,7 +7,7 @@
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <script src="qrcode.min.js"></script>
     <script src="tipoPruebas.js"></script>
-    
+    <script src="particles.min.js"></script>
 </head>
 
 
@@ -25,25 +25,188 @@
 
     model-viewer {
         width: 100%;
-        height: 90%;
+        height: 100%;
         background-color: transparent;
         position: absolute;
         left: 0;
-        top: 5%;
+        top: 0%;
         z-index: 99999;
+    }
+
+    #qrContainer {
+        width: 150px;
+        height: 150px;
+        position: absolute;
+        right: 50px;
+        top: 50px;
+        background-color: white;
+        display: inline-block;
+        padding: 20px 20px 40px 20px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    #qrContainerNextChallengue {
+        bottom: 0;
+        left: 100px;
+        width: 150px;
+        height: 150px;
+        position: absolute;
+        /* transform: translate(-50%, -100%); */
+        background-color: white;
+        display: inline-block;
+        padding: 20px 20px 40px 20px;
+        border-radius: 100px 100px 10px 10px;
+        text-align: center;
+    }
+
+    #qrLabel {
+        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        font-size: 15px;
+        text-align: center;
+        vertical-align: -webkit-baseline-middle;
+        top: 10px;
+        /* margin: 100px; */
+    }
+
+    #qrLabelNextPhoto {
+        font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+        font-size: 15px;
+        text-align: center;
+        vertical-align: super;
+        top: 10px;
+        /* margin: 100px; */
+    }
+
+    .anchor {
+        display: none;
+    }
+
+    .lineContainer {
+        pointer-events: none;
+        display: block;
+    }
+
+    .line {
+        stroke: #16a5e6;
+        stroke-width: 2;
+        stroke-dasharray: 2;
+        z-index: 99999;
+    }
+
+    #container {
+        position: absolute;
+        display: flex;
+        justify-content: space-evenly;
+        bottom: 8px;
+        left: 8px;
+        width: 100%;
+    }
+
+    .label {
+        background: #fff;
+        border-radius: 4px;
+        border: none;
+        box-sizing: border-box;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+        color: rgba(0, 0, 0, 0.8);
+        display: block;
+        font-family: Futura, Helvetica Neue, sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        max-width: 128px;
+        padding: 0.5em 1em;
+        bottom: 10px;
+        pointer-events: none;
+    }
+
+    .hotspot {
+        background: #fff;
+        border-radius: 50%;
+        border: none;
+        box-sizing: border-box;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+        color: rgba(0, 0, 0, 0.8);
+        cursor: pointer;
+        display: block;
+        font-family: Futura, Helvetica Neue, sans-serif;
+        font-size: 18px;
+        font-weight: 700;
+        height: 64px;
+        line-height: 64px;
+        margin: -32px;
+        padding: 0;
+        position: absolute;
+        text-align: center;
+        width: 64px;
+        z-index: 1;
+    }
+
+    #animation-demo::part(default-ar-button) {
+        bottom: 64px;
+    }
+
+    /* This keeps child nodes hidden while the element loads */
+    :not(:defined)>* {
+        display: none;
+    }
+
+    #hotSpotButton {
+        transform: scale(1);
+        /* Estado inicial de la escala */
+        transition: transform 1.5s ease;
+        /* Animación de 0.5 segundos */
+    }
+
+    #hotSpotButton span {
+        transition: opacity 0.5s ease 1.5s;
+        /* Duración y tipo de animación para la opacidad */
+    }
+
+    #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: white;
+        opacity: 0;
+        transition: opacity 0.5s ease 0.5s;
+        z-index: 999999999;
+    }
+    #particles-js {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        opacity: 0.3;
+    
     }
 </style>
 
 <body class="bg-dark text-white">
-    <button id="updateButton" onclick="checkForUpdates()">Update</button>
-    <label id="cubeCountId">Cube count</label>
-    <model-viewer id="modelViewer" src="" auto-rotate camera-controls></model-viewer>
-    <div id="qrcode"
-        style="width: 100px;height: 100px;position: absolute;right: 50px;top: 50px;background-color: white;display: inline-block;">
+    <div id="particles-js"></div>
+    <div id="overlay"></div>
+    <!--button id="updateButton" onclick="checkForUpdates()">Update</button>
+    <label id="cubeCountId">Cube count</label-->
+    <model-viewer id="modelViewer" src="baseGltf/empty2.glb" auto-rotate camera-controls>
+        <button id="hotSpotButton" class="hotspot" slot="hotspot-visor" data-position="0 0 0" data-normal="0 0 1">
+            <span>?</span>
+        </button>
+
+
+    </model-viewer>
+    <div id="qrContainer" style="display: none;">
+        <div id="qrcode"></div>
+        <label id="qrLabel">Llévame contigo!</label>
     </div>
-    <div id="qrcodeNextChallengue"
-    style="width: 100px;height: 100px;position: absolute;left: 50px;top: 50px;background-color: white;display: inline-block;">
-</div>
+    <div id="qrContainerNextChallengue">
+        <label id="qrLabelNextPhoto">Siguiente Foto!</label>
+        <div id="qrcodeNextChallengue"></div>
+
+    </div>
+
 </body>
 <script src="realtimeMosaic.js"></script>
 
