@@ -144,7 +144,7 @@ function init() {
     videoPlayer.style.left = "2000px"; // Alineado a la izquierda
     videoPlayer.style.zIndex = 9999999999; // Inicialmente detrás de otros elementos
     videoPlayer.style.display = "block"; // Inicialmente detrás de otros elementos
-    videoPlayer.setAttribute('playsinline');
+    videoPlayer.setAttribute('playsinline', true);
     videoPlayer.removeAttribute('controls');
     videoPlayer.style.pointerEvents = 'none'; // No permitir interacciones
     videoPlayer.muted = true;

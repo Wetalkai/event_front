@@ -75,7 +75,7 @@ body, html {
   /* Contenido del modal */
   .modal-content {
     position: relative;
-    background-color: #3d655d;
+    background: radial-gradient(black, transparent);
     margin: 25% auto;
     padding: 20px;
     /* border: 1px solid #888; */
@@ -135,6 +135,7 @@ body, html {
 }
 
 #capturedPhoto {
+  border-radius:10px;
    height: 100%!important;
    width: 100%!important;
    position: absolute;
@@ -272,7 +273,7 @@ model-viewer {
   }
 
   #send {
-    background-color: #1c1c1c;
+    background-color: #80af25;
     border-style: none;
   }
   .camera-container {
