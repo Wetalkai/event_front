@@ -89,8 +89,16 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('titleTest').innerHTML = window.tests[tipoPrueba].title;
 
     document.getElementById('descriptionTest').innerHTML = window.tests[tipoPrueba].description;
-    if (tipoPrueba == "emojis") {
+    if (tipoPrueba == "emojis" || tipoPrueba == "saludoV") {
         document.getElementById('descriptionTest').style.fontSize = "100px";
+    }
+
+    if (window.tests[tipoPrueba].helper) {
+        const script = document.createElement('script');
+        script.src = window.tests[tipoPrueba].helper;
+        script.onload = () => console.log(`Script cargado: ${window.tests[tipoPrueba].helper}`);
+        script.onerror = () => console.error(`Error al cargar el script: ${window.tests[tipoPrueba].helper}`);
+        document.head.appendChild(script);
     }
 
 })
@@ -122,7 +130,7 @@ document.getElementById('send').addEventListener('click', function () {
 
                     document.getElementById('descriptionTest').innerHTML = "Gracias! Tu prueba ha sido enviada. Consulta el progreso para saber cuánto falta para conseguir el premio!";
                     document.getElementById('loadModel').style.display = 'block';
-                    this.style.display = 'none'; // Ocultar botón de captura
+                   // this.style.display = 'none'; // Ocultar botón de captura
                     document.getElementById('capture').style.display = 'none';
                     document.getElementById('toggleCamera').style.display = 'none';
 
@@ -135,7 +143,7 @@ document.getElementById('send').addEventListener('click', function () {
             })
             .catch(data => {
 
-                alert('Hubo un problema, intentalo más tarde')
+                console.log('Hubo un problema, intentalo más tarde', data)
 
             });
     }, 'image/jpeg', 0.85);

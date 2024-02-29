@@ -6,9 +6,13 @@ const hostname = window.location.hostname;
 const port = window.location.port; // Extrae el puerto
 var extraDomain = "";
 var lastCameraTarget, lastCameraOrbit, lastFieldOfView, lastInterpolationDecay;
-var maxRowCubes = 5;
+var maxRowCubes = 6;
 var scaleCube = 0.5;
 var gameFinished = false;
+var totalCubos = 21;
+var currentRow = 0;
+let incX = 0;
+let incY = 0;
 if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWith("192.")) {
     // Si se está ejecutando en localhost o en una red local
     //domainHttp = `http://${hostname}:${port || '3008'}`;
@@ -54,11 +58,12 @@ function restoreGeneralView(modelViewer) {
     modelViewer.fieldOfView = lastFieldOfView;
     modelViewer.interpolationDecay = lastInterpolationDecay;
     if (!gameFinished) {
-        document.getElementById("hotSpotButton").style.transform = "scale(1)"
+        //document.getElementById("hotSpotButton").style.transform = "scale(1)"
     } else {
+        alert("SI")
         document.getElementById("qrContainer").style.display = 'block';
         document.getElementById("qrContainerNextChallengue").style.display = 'none';
-        document.getElementById("hotSpotButton").style.transform = "scale(0)"
+        // document.getElementById("hotSpotButton").style.transform = "scale(0)"
         particlesJS.load('particles-js', 'particlesSnow.json', function () {
             console.log('callback - particles.js config loaded');
         });
@@ -70,25 +75,56 @@ function restoreGeneralView(modelViewer) {
 }
 
 function getTranslation(inc = 0) {
-    /*
-    for(let i = totalCubos; i > 0; i -= maxRowCubes) {
-        for(let j = 0; j < maxRowCubes; j++) { // Itera sobre el número de cubos en la fila actual
-            let centroFila = (maxRowCubes - 1) * scaleCube; // Calcula el centro de la fila
-            let posX = (j - centroFila / 2) * 2.1 * scaleCube; // Ajusta 'x' para centrar los cubos en la fila
-            translation =  [posX, currentRow * 2 * scaleCube, 0]
+    console.log("getting translation from ", lastCount)
+    var countPos = lastCount + inc;
+    if (countPos >= 1 && countPos <= 5) {
+        incX += 2.1 * scaleCube
+        if (countPos == 5) {
+            incX = 2.1 * scaleCube * 0.5;
+            incY = 2 * scaleCube;
+        }
+    } else if (countPos >= 6 && countPos <= 9) {
+        incX += 2.1 * scaleCube
+        if (countPos == 9) {
+            incX = 2.1 * scaleCube * 0.5 * 2;
+            incY = 4 * scaleCube;
         }
 
+    } else if (countPos >= 10 && countPos <= 12) {
+        incX += 2.1 * scaleCube
+        if (countPos == 12) {
+            incX = 2.1 * scaleCube * 0.5 * 3;
+            incY = 6 * scaleCube;
+        }
+
+    } else if (countPos >= 13 && countPos <= 14) {
+        incX += 2.1 * scaleCube
+        if (countPos == 14) {
+            incX = 2.1 * scaleCube * 0.5 * 4;
+            incY = 8 * scaleCube;
+        }
+
+    } else if (countPos == 15) {
+        incX = 0;
+        incY = 10 * scaleCube;
+
     }
-    */
+
+    const translation = [incX, incY, 0];
+    return translation;
+    /*
     const fila = Math.floor((lastCount + inc) / maxRowCubes); // Determina la fila actual basada en cuántos cubos se han generado
     const posicionEnFila = (lastCount + inc) % maxRowCubes; // Determina la posición del cubo dentro de la fila (0-4)
     const translation = [posicionEnFila * scaleCube * 2.1, fila * scaleCube * 2, 0];
     return translation;
+    */
+
 }
 function updateModelViewer(data) {
 
     console.log("setting camera to spot")
-    setCameraToHotspot(document.getElementById('modelViewer'))
+    document.getElementById('overlay').style.opacity = '1';
+    // setCameraToHotspot(document.getElementById('modelViewer'))
     setTimeout(() => {
         console.log("loading model viewer")
         const modelViewer = document.getElementById('modelViewer');
@@ -107,12 +143,15 @@ function updateModelViewer(data) {
 
         modelViewer.parentNode.replaceChild(newModelViewer, modelViewer);
 
-        var translation = getTranslation();
-        newModelViewer.updateHotspot({ name: "hotspot-visor", position: translation.join(' '), normal: "0 0 1" })
+        // var translation = getTranslation(0);
+        // newModelViewer.updateHotspot({ name: "hotspot-visor", position: translation.join(' '), normal: "0 0 1" })
+        /*
         setTimeout(() => {
             restoreGeneralView(document.getElementById('modelViewer'))
         }, 2000)
-    }, 2500)
+        */
+        document.getElementById('overlay').style.opacity = '0';
+    }, 1500)
 
     //newModelViewer.fieldOfView = '45deg';
 
@@ -135,11 +174,16 @@ function checkForUpdates() {
                 showNextChallengueQR(test)
 
             } else if (data.ok && data.count > lastCount) {
-
+                console.log(data.count, ", ", testsArray.length)
                 if (data.count >= testsArray.length) {
                     console.log("no scaleCube")
                     if (!gameFinished) {
                         gameFinished = true;
+                        particlesJS.load('particles-js', 'particlesSnow.json', function () {
+                            console.log('callback - particles.js config loaded');
+                        });
+                        document.getElementById("qrContainer").style.display = 'block';
+                        document.getElementById("qrContainerNextChallengue").style.display = 'none';
                         updateModelViewer(data);
                         //document.getElementById('hotSpotButton').style.display = 'none';
                     }
@@ -152,6 +196,8 @@ function checkForUpdates() {
                     lastCount = data.count;
                     scaleCube = data.scaleCube;
                     maxRowCubes = data.maxRowCubes;
+                    totalCubos = data.totalCubos;
+                    currentRow = data.currentRow;
                     updateModelViewer(data);
                 }
 

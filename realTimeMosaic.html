@@ -173,6 +173,7 @@
         opacity: 0;
         transition: opacity 0.5s ease 0.5s;
         z-index: 999999999;
+        pointer-events: none;
     }
     #particles-js {
         position: fixed;
@@ -191,9 +192,9 @@
     <!--button id="updateButton" onclick="checkForUpdates()">Update</button>
     <label id="cubeCountId">Cube count</label-->
     <model-viewer id="modelViewer" src="baseGltf/empty2.glb" auto-rotate camera-controls>
-        <button id="hotSpotButton" class="hotspot" slot="hotspot-visor" data-position="0 0 0" data-normal="0 0 1">
+        <!--button id="hotSpotButton" class="hotspot" slot="hotspot-visor" data-position="0 0 0" data-normal="0 0 1">
             <span>?</span>
-        </button>
+        </button-->
 
 
     </model-viewer>
