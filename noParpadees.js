@@ -50,7 +50,7 @@ function cargarScripts(urls) {
 }
 
 var temporizador; // Variable para el temporizador
-var MAX_TIEMPO = 5;
+var MAX_TIEMPO = 20;
 var tiempoRestante = MAX_TIEMPO; // 20 segundos para el desafío
 
 function resetTemporizador() {
@@ -64,7 +64,7 @@ function resetTemporizador() {
 
 function actualizarUI() {
     // Actualizar el elemento UI con el tiempo restante
-    document.getElementById('temporizador').innerText = `Tiempo Restante: ${tiempoRestante}s`;
+    document.getElementById('temporizador').innerText = ` ${tiempoRestante}s`;
 }
 
 function iniciarTemporizador() {
@@ -80,7 +80,10 @@ function iniciarTemporizador() {
             videoPlayer.currentTime = 0;
             videoPlayer.muted = false
             videoPlayer.play(); // Reproducir el video
-            videoPlayer.style.left = 0;
+            setTimeout(() => {
+                videoPlayer.style.left = 0;
+            }, 200);
+            
             
             clearInterval(temporizador);
             temporizador = null;
@@ -99,6 +102,8 @@ function iniciarTemporizador() {
 
 function init() {
 
+    document.getElementById('toggleCamera').style.left = "200%";
+
     const videoElement = document.getElementById('webcam');
     var button = document.getElementById('capture');
     button.disabled = true;
@@ -107,15 +112,14 @@ function init() {
     // Crear el elemento del temporizador y añadirlo al DOM
     var temporizadorElement = document.createElement('div');
     temporizadorElement.id = 'temporizador'; // Asignar ID
-    temporizadorElement.style.fontSize = '20px'; // Estilo de ejemplo, ajusta según necesidad
-    temporizadorElement.innerText = 'Tiempo Restante: ' + MAX_TIEMPO + "s"; // Texto inicial
-    document.body.appendChild(temporizadorElement); // Añadir el temporizador al final del body
+    temporizadorElement.innerText = '' + MAX_TIEMPO + "s"; // Texto inicial
+    document.getElementById("containerOfCamera").appendChild(temporizadorElement); // Añadir el temporizador al final del body
 
     // Crear el botón COMENZAR
     var startButton = document.createElement('button');
     startButton.textContent = 'COMENZAR'; // Texto del botón
     startButton.className = 'btn btn-primary'; // Clases para estilos Bootstrap
-
+    startButton.style.width = '100%'; // Ancho del 100%
     // Función para manejar el clic en el botón
     startButton.addEventListener('click', function () {
         iniciarTemporizador(); // Asumiendo que esta función ya está definida y maneja el inicio del temporizador
@@ -165,11 +169,13 @@ function init() {
             return;
         }
 
-        if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
-            console.log("Cara fuera de pantalla, reiniciando temporizador...");
+        if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length !== 2) {
+            console.log("Se requieren exactamente dos caras en pantalla, reiniciando temporizador...");
             resetTemporizador();
             return;
         }
+
+        let pestaneoDetectado = false; // Flag para detectar si alguna de las caras parpadea
 
         for (const landmarks of results.multiFaceLandmarks) {
             // Índices de landmarks para el ojo izquierdo
@@ -177,21 +183,24 @@ function init() {
             const lowerEyelid = landmarks[145];
             const eyeLeftCorner = landmarks[130];
             const eyeRightCorner = landmarks[243];
-
+    
             // Calcular la distancia vertical entre los párpados
             const verticalDistance = Math.abs(upperEyelid.y - lowerEyelid.y);
-
+    
             // Calcular la distancia horizontal entre las esquinas del ojo
             const horizontalDistance = Math.abs(eyeRightCorner.x - eyeLeftCorner.x);
-
+    
             // Verificar si la distancia vertical es menor que el 20% de la distancia horizontal
-            var pestaneoDetectado = verticalDistance < (horizontalDistance * 0.2);
-
-            if (pestaneoDetectado) {
-                console.log("Pestañeo detectado, reiniciando temporizador...");
-                resetTemporizador();
-                break; // Salir del bucle si se detecta un pestañeo
+            if (verticalDistance < (horizontalDistance * 0.2)) {
+                pestaneoDetectado = true; // Se detecta pestañeo en al menos una cara
+                break; // No es necesario continuar si ya se detectó un pestañeo
             }
+        }
+    
+        // Si se detecta un pestañeo en alguna de las caras, reiniciar el temporizador
+        if (pestaneoDetectado) {
+            console.log("Pestañeo detectado, reiniciando temporizador...");
+            resetTemporizador();
         }
     }
 
@@ -200,7 +209,7 @@ function init() {
     });
 
     faceMesh.setOptions({
-        maxNumFaces: 1, // Centrarse en una cara para este desafío
+        maxNumFaces: 2, // Centrarse en una cara para este desafío
         refineLandmarks: true,
         minDetectionConfidence: 0.5,
         minTrackingConfidence: 0.5,

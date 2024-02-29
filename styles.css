@@ -135,11 +135,19 @@ body, html {
 }
 
 #capturedPhoto {
-  border-radius:10px;
+   border-radius:10px;
    height: 100%!important;
    width: 100%!important;
    position: absolute;
     
+}
+#temporizador {
+  position: absolute;
+  top: 0%;
+  left: 2%;
+  text-align: center;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-size: 30px;
 }
 
 .modal-footer {

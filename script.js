@@ -64,6 +64,7 @@ document.getElementById('capture').addEventListener('click', function () {
     photoControls.style.display = 'block';
     video.style.display = 'none';
     this.style.display = 'none';
+    document.getElementById('toggleCamera').style.display = 'none';
 });
 
 
@@ -89,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('titleTest').innerHTML = window.tests[tipoPrueba].title;
 
     document.getElementById('descriptionTest').innerHTML = window.tests[tipoPrueba].description;
-    if (tipoPrueba == "emojis" || tipoPrueba == "saludoV") {
+    if (tipoPrueba == "emojis") {
         document.getElementById('descriptionTest').style.fontSize = "100px";
     }
 
@@ -128,13 +129,15 @@ document.getElementById('send').addEventListener('click', function () {
                     const photoControls = document.getElementById('photoControls');
                     photoControls.style.display = 'none';
 
-                    document.getElementById('descriptionTest').innerHTML = "Gracias! Tu prueba ha sido enviada. Consulta el progreso para saber cuánto falta para conseguir el premio!";
-                    document.getElementById('loadModel').style.display = 'block';
+                    document.getElementById('descriptionTest').innerHTML = "Gracias! Tu prueba ha sido enviada. Consulta la pantalla para ver el resultado.";
+                    //document.getElementById('loadModel').style.display = 'block';
                    // this.style.display = 'none'; // Ocultar botón de captura
                     document.getElementById('capture').style.display = 'none';
                     document.getElementById('toggleCamera').style.display = 'none';
 
-
+                    if (tipoPrueba == "emojis") {
+                        document.getElementById('descriptionTest').style.fontSize = "20px";
+                    }
                 } else {
                     console.log("data", data)
                     alert('Error al enviar la foto, ', data.error)
