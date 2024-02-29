@@ -11,12 +11,12 @@ window.tests = {
         baseIndex: "index_normal.html",
         url: "https://wetalkai.github.io/event_front?tipoPrueba=mismaaficion"
     },
-    noconocidolugardeorigen: {
+    /*noconocidolugardeorigen: {
         title: "Lugar de origen",
         description: "Hazte una foto con alguien que no conozcas pero que haya nacido en la misma Comunidad Autónoma que tú",
         baseIndex: "index_normal.html",
         url: "https://wetalkai.github.io/event_front?tipoPrueba=noconocidolugardeorigen"
-    },
+    },*/
     muchascaras: {
         title: "Muchas caras!",
         description: "Hazte una foto con tres personas que no conozcas y que hayan nacido en el mismo mes que tú. Si no lo encuentras, bebes doble!",
@@ -58,12 +58,12 @@ window.tests = {
         baseIndex: "index_normal.html",
         url: "https://wetalkai.github.io/event_front?tipoPrueba=imitaPelicula"
     },
-    obraArte: {
+    /*obraArte: {
         title: "Viva el Arte!",
         description: "Elige una obra de arte famosa y recreadla con tus amigos. ¡Pon atención a los detalles!",
         baseIndex: "index_normal.html",
         url: "https://wetalkai.github.io/event_front?tipoPrueba=obraArte"
-    },
+    },*/
     bebidaGanadora: {
         title: "Bebida ganadora!",
         description: "Busca el grupo con más bebidas iguales y hazte una foto con ellos. Si tu bebida coincide con la del grupo, ¡bebes doble!",
