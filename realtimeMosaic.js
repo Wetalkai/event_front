@@ -276,7 +276,10 @@ function getNextTest(lastTipoPrueba) {
         if (index === testsArray.length - 1) {
             console.log('Es el último elemento');
             showMainQR()
-            return null;
+            return {
+                key: testsArray[testsArray.length-1][0], // La clave del objeto (nombre del test)
+                value: testsArray[testsArray.length-1][1], // El objeto que contiene los detalles del test
+            };
         } else {
             // Si no es el último, muestra el siguiente elemento
             console.log(testsArray[index + 1]);
