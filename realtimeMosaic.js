@@ -275,6 +275,7 @@ function getNextTest(lastTipoPrueba) {
         // Verifica si el elemento encontrado es el último en el array
         if (index === testsArray.length - 1) {
             console.log('Es el último elemento');
+            showMainQR()
             return null;
         } else {
             // Si no es el último, muestra el siguiente elemento
