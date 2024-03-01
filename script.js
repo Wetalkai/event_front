@@ -8,7 +8,7 @@ var domain = ""
 // Detecta el dominio actual automáticamente
 const hostname = window.location.hostname;
 const port = window.location.port; // Extrae el puerto
-
+var tipoPrueba
 if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWith("192.")) {
     // Si se está ejecutando en localhost o en una red local
     //domainHttp = `http://${hostname}:${port || '3008'}`;
@@ -18,13 +18,17 @@ if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWi
     // Si se está ejecutando en el servidor de producción
     domain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
 }
-
+var messageBlob = null;
 
 document.getElementById('capture').addEventListener('click', function () {
     const video = document.getElementById('webcam');
     const canvas = document.getElementById('canvasPhoto');
     const photoControls = document.getElementById('photoControls');
     const capturedPhoto = document.getElementById('capturedPhoto');
+
+    if (tipoPrueba == "generica") {
+        document.getElementById('messageTextarea').style.display = 'block';
+    }
 
     // Determinar las dimensiones para el recorte centrado
     const videoWidth = video.videoWidth;
@@ -85,9 +89,14 @@ document.getElementById('closeBtnPhoto').addEventListener('click', function () {
 document.addEventListener('DOMContentLoaded', function () {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const tipoPrueba = urlParams.get('tipoPrueba');
-
+    tipoPrueba = urlParams.has('tipoPrueba') ? urlParams.get('tipoPrueba') : "generica";
+    
+    if (!(tipoPrueba in window.tests)) {
+        tipoPrueba = "generica";
+    }
     document.getElementById('titleTest').innerHTML = window.tests[tipoPrueba].title;
+    if (tipoPrueba != "generica")
+        createTextImageAndConvertToBlob(window.tests[tipoPrueba].title);
 
     document.getElementById('descriptionTest').innerHTML = window.tests[tipoPrueba].description;
     if (tipoPrueba == "emojis") {
@@ -106,14 +115,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Botón enviar: Envía la foto al servidor y oculta los controles
 document.getElementById('send').addEventListener('click', function () {
+    document.getElementById("loadingContainer").style.left = "0px";
+    //alert("I")
+    if (tipoPrueba == "generica") {
+        const messageText = document.getElementById('messageTextarea').value;
+        createTextImageAndConvertToBlob(messageText);
+    }
     const canvas = document.getElementById('canvasPhoto');
     canvas.toBlob(blob => {
         const formData = new FormData();
         formData.append('image', blob, 'foto.jpg');
 
+        // Suponiendo que messageBlob es tu blob generado a partir del canvas de mensaje
+        // Asegúrate de que messageBlob esté disponible en este ámbito
+        formData.append('messageImage', messageBlob, 'mensaje.jpg');
+
         // Captura el parámetro 'tipoPrueba' de la URL
-        const searchParams = new URLSearchParams(window.location.search);
-        var tipoPrueba = searchParams.has('tipoPrueba') ? searchParams.get('tipoPrueba') : "namePruebaUndefined";
+
 
         formData.append('tipoPrueba', tipoPrueba);
         console.log('tipoPrueba', tipoPrueba);
@@ -126,12 +144,13 @@ document.getElementById('send').addEventListener('click', function () {
             .then(data => {
                 console.log(data);
                 if (data.ok) {
+                    document.getElementById("loadingContainer").style.left = "200%";
                     const photoControls = document.getElementById('photoControls');
                     photoControls.style.display = 'none';
 
-                    document.getElementById('descriptionTest').innerHTML = "Gracias! Tu prueba ha sido enviada. Consulta la pantalla para ver el resultado.";
+                    document.getElementById('descriptionTest').innerHTML = "Gracias! Tu foto ha sido enviada. Consulta la pantalla para ver el resultado.";
                     //document.getElementById('loadModel').style.display = 'block';
-                   // this.style.display = 'none'; // Ocultar botón de captura
+                    // this.style.display = 'none'; // Ocultar botón de captura
                     document.getElementById('capture').style.display = 'none';
                     document.getElementById('toggleCamera').style.display = 'none';
 
@@ -141,12 +160,13 @@ document.getElementById('send').addEventListener('click', function () {
                 } else {
                     console.log("data", data)
                     alert('Error al enviar la foto, ', data.error)
+                    document.getElementById("loadingContainer").style.left = "200%";
                 }
                 // Opcional: Acciones posteriores al envío exitoso
             })
             .catch(data => {
-
-                console.log('Hubo un problema, intentalo más tarde', data)
+                document.getElementById("loadingContainer").style.left = "200%";
+                alert('Hubo un problema, intentalo más tarde')
 
             });
     }, 'image/jpeg', 0.85);
@@ -241,6 +261,67 @@ function toggleCamera() {
         console.error("Error al obtener acceso a la cámara: ", error);
     });
 }
+
+function createTextImageAndConvertToBlob(text) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 400;
+    const ctx = canvas.getContext('2d');
+
+    // Establece el color de fondo del canvas
+    ctx.fillStyle = 'white'; // Fondo blanco
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Configura la fuente inicial y el tamaño máximo para comenzar las pruebas
+    let fontSize = 100; // Comenzamos con un tamaño de fuente grande y lo ajustaremos hacia abajo
+    ctx.font = `${fontSize}px Indie Flower`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillStyle = 'black'; // Texto en negro
+
+    // Verifica si el texto necesita ser dividido en dos líneas
+    let lines = [];
+    if (ctx.measureText(text).width > canvas.width) {
+        let middle = text.length / 2;
+        let before = text.lastIndexOf(' ', middle);
+        let after = text.indexOf(' ', middle + 1);
+
+        let splitIndex = (after - middle) < (middle - before) ? after : before;
+        lines.push(text.substring(0, splitIndex));
+        lines.push(text.substring(splitIndex + 1));
+    } else {
+        lines.push(text);
+    }
+
+    // Ajusta el tamaño de la fuente para que el texto más largo se ajuste al canvas
+    let longestLine = lines.reduce((a, b) => a.length > b.length ? a : b, "");
+    while (ctx.measureText(longestLine).width > canvas.width && fontSize > 10) {
+        fontSize -= 1;
+        ctx.font = `${fontSize}px Indie Flower`;
+    }
+
+    // Dibuja las líneas de texto en el canvas
+    const lineHeight = fontSize * 1.2;
+    const totalHeight = lineHeight * lines.length;
+    let startY = (canvas.height - totalHeight) / 2 + fontSize / 2;
+    lines.forEach((line, i) => {
+        ctx.fillText(line, canvas.width / 2, startY + (i * lineHeight));
+    });
+
+    // Mostrar el canvas en la página
+    //document.body.appendChild(canvas);
+
+    // Convertir el canvas a blob y enviarlo
+    canvas.toBlob(function (blob) {
+        // Aquí puedes enviar el blob a un servidor o hacer lo que necesites con él
+        // Mostrar la imagen en pantalla como prueba
+        messageBlob = blob;
+       /* const img = document.createElement('img');
+        img.src = URL.createObjectURL(blob);
+        document.body.appendChild(img);*/
+    }, 'image/jpeg');
+}
+
 
 /*
 var tests = {

@@ -23,6 +23,16 @@
         background-color: rgb(39, 39, 39);
     }
 
+    #imageBackground {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+    }
+
     model-viewer {
         width: 100%;
         height: 100%;
@@ -187,11 +197,13 @@
 </style>
 
 <body class="bg-dark text-white">
+    <image id="imageBackground" src="clandestino.jpg"></image>
     <div id="particles-js"></div>
     <div id="overlay"></div>
     <!--button id="updateButton" onclick="checkForUpdates()">Update</button>
     <label id="cubeCountId">Cube count</label-->
-    <model-viewer id="modelViewer" src="baseGltf/empty2.glb" auto-rotate camera-controls>
+    <model-viewer id="modelViewer" src="baseGltf/empty2.glb" auto-rotate camera-controls
+    environment-image="st_peters_square_night_2k.hdr">
         <!--button id="hotSpotButton" class="hotspot" slot="hotspot-visor" data-position="0 0 0" data-normal="0 0 1">
             <span>?</span>
         </button-->

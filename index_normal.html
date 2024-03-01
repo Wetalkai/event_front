@@ -45,13 +45,22 @@
                 </button>
                 <div class="modal-body">
                     <img id="capturedPhoto">
+                    <!-- Textarea para el mensaje -->
                 </div>
+                <textarea id="messageTextarea" class="form-control mt-3" placeholder="Deja tu mensaje: Máximo 50 caracteres" maxlength="50" style="resize: none;display: none;"></textarea>
                 <div class="modal-footer">
                     <button id="send" class="btn btn-primary">ENVIAR</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div id="loadingContainer" class="d-flex justify-content-center">
+        <div id="loadingIcon" class="spinner-border" role="status">
+          <span class="visually-hidden">Cargando...</span>
+        </div>
+      </div>
+      
 
     <canvas id="canvasPhoto" style="display:none;"></canvas>
 

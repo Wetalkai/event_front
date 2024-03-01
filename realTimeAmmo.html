@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>three.js physics - ammo.js instancing</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <!--link type="text/css" rel="stylesheet" href="main.css"-->
+
+</head>
+
+<body>
+
+
+
+    <script src="jsm/libs/ammo.wasm.js"></script>
+
+    <script type="importmap">
+			{
+				"imports": {
+					"three": "../build/three.module.js",
+					"three/addons/": "./jsm/"
+				}
+			}
+		</script>
+
+    <script type="module">
+
+        import * as THREE from 'three';
+        import { OrbitControls } from '../build/OrbitControls.js';
+        import { AmmoPhysics } from '../build/AmmoPhysics.js';
+        import { GLTFLoader } from "../build/GLTFLoader.js";
+
+        var domainHttp = ""
+        let lastCount = 0;
+
+        // Detecta el dominio actual automáticamente
+        const hostname = window.location.hostname;
+        const port = window.location.port; // Extrae el puerto
+        var extraDomain = "";
+        if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWith("192.")) {
+            // Si se está ejecutando en localhost o en una red local
+            //domainHttp = `http://${hostname}:${port || '3008'}`;
+            domainHttp = `http://${hostname}:3008`;
+        } else {
+            // Si se está ejecutando en el servidor de producción
+            domainHttp = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
+            extraDomain = "/event_front";
+        }
+
+
+        let camera, scene, renderer;
+        let physics, position;
+
+        let boxes, spheres;
+
+
+
+        init();
+
+        async function init() {
+
+            physics = await AmmoPhysics();
+            position = new THREE.Vector3();
+
+            //
+
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 0.5, -1.5);
+            camera.lookAt(0, 0.5, 0);
+            camera.zooom = -20
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+
+            const hemiLight = new THREE.HemisphereLight();
+            scene.add(hemiLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 3);
+            dirLight.position.set(5, 5, 5);
+            dirLight.castShadow = true;
+            dirLight.shadow.camera.zoom = 2;
+            scene.add(dirLight);
+
+            const floor = new THREE.Mesh(
+                new THREE.BoxGeometry(10, 5, 10),
+                new THREE.ShadowMaterial({ color: 0x000000})
+                //new THREE.MeshBasicMaterial({ color: 0x444444 })
+            );
+            floor.position.y = - 2.5;
+            floor.receiveShadow = true;
+            floor.userData.physics = { mass: 0 };
+            scene.add(floor);
+
+            const wall1 = new THREE.Mesh(
+                new THREE.BoxGeometry(3, 2, 1),
+                new THREE.ShadowMaterial({ color: 0x444444, visible: false })
+            );
+            wall1.position.set(0, 0.5, 0.6);
+            wall1.receiveShadow = true;
+            wall1.userData.physics = { mass: 0 };
+            scene.add(wall1);
+
+            const wall2 = new THREE.Mesh(
+                new THREE.BoxGeometry(3, 2, 1),
+                new THREE.ShadowMaterial({ color: 0x444444, visible: false })
+            );
+            wall2.position.set(0, 0.5, -0.8);
+            wall2.receiveShadow = true;
+            wall2.userData.physics = { mass: 0 };
+            scene.add(wall2);
+
+            const wall3 = new THREE.Mesh(
+                new THREE.BoxGeometry(0.2, 2, 1),
+                new THREE.ShadowMaterial({ color: 0x444444, visible: false })
+            );
+            wall3.position.set(-1.2, 0.5, 0.0);
+            wall3.receiveShadow = true;
+            wall3.userData.physics = { mass: 0 };
+            scene.add(wall3);
+
+            const wall4 = new THREE.Mesh(
+                new THREE.BoxGeometry(0.2, 2, 1),
+                new THREE.ShadowMaterial({ color: 0x444444, visible: false })
+            );
+            wall4.position.set(1.2, 0.5, 0.0);
+            wall4.receiveShadow = true;
+            wall4.userData.physics = { mass: 0 };
+            scene.add(wall4);
+
+            const wall5 = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 0.02, 0.3),
+                new THREE.MeshBasicMaterial({ emissive: 0xFF4400})
+            );
+            wall5.position.set(-0.5, 0.9, 0.0);
+            wall5.rotation.set(0, 0, -0.05);
+            wall5.receiveShadow = true;
+            wall5.userData.physics = { mass: 0 };
+            scene.add(wall5);
+
+            const wall6 = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 0.02, 0.3),
+                new THREE.MeshBasicMaterial({ color: 0x444444})
+            );
+            wall6.position.set(0.5, 0.4, 0.0);
+            wall6.rotation.set(0, 0, 0.05);
+            wall6.receiveShadow = true;
+            wall6.userData.physics = { mass: 0 };
+            scene.add(wall6);
+            //
+
+            // Spheres
+
+            function createSphere(texturePath) {
+                const matrix = new THREE.Matrix4();
+                const loader = new GLTFLoader();
+                loader.load('baseGltf/sphereBase.glb', function (gltf) {
+
+                    var model = gltf.scene.children[0];
+                    console.log(model)
+                    model.castShadow = true;
+                    model.receiveShadow = true;
+                    model.userData.physics = { mass: 1 };
+                    model.position.set(-1, 1, 0);
+                    model.scale.set(0.15, 0.15, 0.15)
+                    const textureLoader = new THREE.TextureLoader();
+                    const texture = textureLoader.load(texturePath, function (texture) {
+                        // Esta función se llama cuando la textura se ha cargado
+                        model.material.map = texture;
+                        model.material.roughness = 0;
+                        console.log('Textura cargada');
+                        scene.add(model);
+                        physics.addMesh(model, 1);
+                    });
+
+
+
+
+
+                }, undefined, function (error) {
+                    console.error(error);
+                });
+            }
+
+
+            physics.addScene(scene);
+
+            //
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+
+
+            //
+            /*
+                        const controls = new OrbitControls(camera, renderer.domElement);
+                        controls.target.y = 0.5;
+                        controls.update();
+            */
+            animate();
+            /*
+                            setInterval( () => {
+            
+                                let index = Math.floor( Math.random() * boxes.count );
+            
+                                position.set( 0, Math.random() + 1, 0 );
+                                physics.setMeshPosition( boxes, position, index );
+            
+                                //
+            
+                                index = Math.floor( Math.random() * spheres.count );
+            
+                                position.set( 0, Math.random() + 1, 0 );
+                                physics.setMeshPosition( spheres, position, index );
+            
+                            }, 1000 / 60 );
+            */
+            document.addEventListener('click', function () {
+                //   createSphere()
+            });
+
+            function checkForUpdates() {
+                const url = domainHttp + "/getCount";
+                //console.log("checkForUpdates, ", url)
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        if (data.ok && data.count == 0) {
+                            //document.getElementById('modelViewer').src = ""
+                            lastCount = 0;
+
+                            //    const test = getNextTest(data.count)
+
+
+                        } else if (data.ok && data.count > lastCount) {
+                            
+                            loadModel()
+
+                            //  console.log(data.count, ", ", testsArray.length)
+                            /*
+                            if (data.count >= testsArray.length) {
+                                console.log("no scaleCube")
+                                if (!gameFinished) {
+                                    gameFinished = true;
+                                    particlesJS.load('particles-js', 'particlesSnow.json', function () {
+                                        console.log('callback - particles.js config loaded');
+                                    });
+                                    document.getElementById("qrContainer").style.display = 'block';
+                                    document.getElementById("qrContainerNextChallengue").style.display = 'none';
+                                    updateModelViewer(data);
+                                    //document.getElementById('hotSpotButton').style.display = 'none';
+                                }
+    
+                            } else {
+                                
+                                const test = getNextTest(data.count)
+                                showNextChallengueQR(test)
+                                console.log("updating cube count to")
+                                //document.getElementById('cubeCountId').innerText = "Cube count: " + data.count;
+                                lastCount = data.count;
+                                scaleCube = data.scaleCube;
+                                maxRowCubes = data.maxRowCubes;
+                                totalCubos = data.totalCubos;
+                                currentRow = data.currentRow;
+                                updateModelViewer(data);
+                           // }
+    */
+                        }
+                    })
+                    .catch(console.error);
+            }
+
+            function loadModel() {
+                var src = domainHttp + "/baseGltf/modified_cube.gltf?time=" + new Date().getTime()
+                fetch(src)
+                    .then(response => response.json())
+                    .then(gltf => {
+                        //const nodes = gltf.nodes; // Obtener los nodos del GLTF
+                        //const lastNode = nodes[lastCount]; // Acceder al último nodo
+                        console.log("gltf.images.length: ", gltf.images.length)
+                        console.log(lastCount)
+                        for (let i = lastCount; i < gltf.images.length; i++) {
+                            const image = gltf.images[i]
+                            var linkTexture = domainHttp + "/baseGltf/" + image.uri;
+                            console.log(linkTexture)
+                            createSphere(linkTexture)
+                        }
+                        lastCount = gltf.images.length;
+
+                    })
+                    .catch(error => console.error('Error al cargar el GLTF:', error));
+
+            }
+
+            setInterval(checkForUpdates, 5000); // Consulta cada 5 segundos
+            checkForUpdates(); // Consulta inicial
+        }
+
+
+
+        function animate() {
+
+            requestAnimationFrame(animate);
+
+            renderer.render(scene, camera);
+
+
+
+        }
+
+        function addSphere() {
+
+
+
+        }
+
+    </script>
+
+
+</body>
+
+</html>

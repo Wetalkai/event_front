@@ -141,6 +141,7 @@ function updateModelViewer(data) {
         newModelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
         newModelViewer.setAttribute('shadow-intensity', '2');
 
+
         modelViewer.parentNode.replaceChild(newModelViewer, modelViewer);
 
         // var translation = getTranslation(0);
@@ -169,12 +170,30 @@ function checkForUpdates() {
             if (data.ok && data.count == 0) {
                 //document.getElementById('modelViewer').src = ""
                 lastCount = 0;
-                document.getElementById('modelViewer').updateHotspot({ name: "hotspot-visor", position: "0 0 0", normal: "0 0 1" })
-                const test = getNextTest(data.count)
-                showNextChallengueQR(test)
+                // document.getElementById('modelViewer').updateHotspot({ name: "hotspot-visor", position: "0 0 0", normal: "0 0 1" })
+                //const test = getNextTest(data.count)
+                showNextChallengueQR({
+                    key: testsArray[0][0], // La clave del objeto (nombre del test)
+                    value: testsArray[0][1], // El objeto que contiene los detalles del test
+                })
 
             } else if (data.ok && data.count > lastCount) {
-                console.log(data.count, ", ", testsArray.length)
+                //console.log(data.count, ", ", testsArray.length)
+
+                console.log("tipo prueba ", data.lastTipoPrueba)
+                const test = getNextTest(data.lastTipoPrueba)
+                if (test)
+                    showNextChallengueQR(test)
+                lastCount = data.count;
+                console.log("updating cube count to")
+                //document.getElementById('cubeCountId').innerText = "Cube count: " + data.count;
+
+                scaleCube = data.scaleCube;
+                maxRowCubes = data.maxRowCubes;
+                totalCubos = data.totalCubos;
+                currentRow = data.currentRow;
+                updateModelViewer(data);
+                /*
                 if (data.count >= testsArray.length) {
                     console.log("no scaleCube")
                     if (!gameFinished) {
@@ -200,7 +219,7 @@ function checkForUpdates() {
                     currentRow = data.currentRow;
                     updateModelViewer(data);
                 }
-
+                */
             }
         })
         .catch(console.error);
@@ -228,7 +247,7 @@ function loadModel(src, data) {
 }
 */
 function showMainQR() {
-    var url = "http://wetalkai.github.io/event_front/realTimeMosaic.html";
+    var url = "http://wetalkai.github.io/event_front/finalModel.html";
 
     console.log("show modal " + url);
 
@@ -244,23 +263,59 @@ function showMainQR() {
 
 const testsArray = Object.entries(window.tests);
 
-function getNextTest(currentIndex) {
-    // Verifica si el currentIndex está dentro del rango del array
-    if (currentIndex < testsArray.length) {
-        // Obtiene la entrada actual basada en currentIndex
-        const entry = testsArray[currentIndex];
-        // Incrementa el contador para la próxima llamada
-        currentIndex++;
+function getNextTest(lastTipoPrueba) {
+    const ultimaPruebaDelServidor = lastTipoPrueba;
+    console.log(testsArray)
 
-        // Retorna el objeto de test actual
-        return {
-            key: entry[0], // La clave del objeto (nombre del test)
-            value: entry[1], // El objeto que contiene los detalles del test
-        };
+    // Encuentra el índice del subarray cuyo primer elemento coincide con el searchString
+    const index = testsArray.findIndex(item => item[0] === ultimaPruebaDelServidor);
+
+    // Verifica si se encontró una coincidencia
+    if (index !== -1) {
+        // Verifica si el elemento encontrado es el último en el array
+        if (index === testsArray.length - 1) {
+            console.log('Es el último elemento');
+            return null;
+        } else {
+            // Si no es el último, muestra el siguiente elemento
+            console.log(testsArray[index + 1]);
+            return {
+                key: testsArray[index + 1][0], // La clave del objeto (nombre del test)
+                value: testsArray[index + 1][1], // El objeto que contiene los detalles del test
+            };
+        }
     } else {
-        // Si ya no hay más elementos, podría retornar null o reiniciar el contador
-        return null; // O puedes reiniciar el contador si deseas ciclar los tests: currentIndex = 0;
+        console.log('No se encontró el elemento buscado');
     }
+    return
+    // Verifica si el currentIndex está dentro del rango del array
+    console.log("getting next test ", currentIndex, ", ", testsArray.length, "lastCount", lastCount)
+    console.log(testsArray[currentIndex])
+
+    const proximoQrPrueba = testsArray[currentIndex];
+    console.log("proximoQrPrueba ", proximoQrPrueba)
+    //const ultimaPruebaDelServidor = lastTipoPrueba;
+    console.log("ultimaPruebaDelServidor ", ultimaPruebaDelServidor)
+
+    if (ultimaPruebaDelServidor == testsArray[currentIndex][0]) {
+        console.log("la prueba ya fue mostrada, se muestra la siguiente")
+        if (currentIndex < testsArray.length - 1) {
+            // Obtiene la entrada actual basada en currentIndex
+            currentIndex++;
+            const entry = testsArray[currentIndex];
+            // Incrementa el contador para la próxima llamada
+
+            console.log("next ", entry)
+            // Retorna el objeto de test actual
+            return {
+                key: entry[0], // La clave del objeto (nombre del test)
+                value: entry[1], // El objeto que contiene los detalles del test
+            };
+        } else {
+            return null;
+        }
+    }
+
 }
 
 function showNextChallengueQR(test) {
@@ -268,7 +323,7 @@ function showNextChallengueQR(test) {
 
     var url = "https://wetalkai.github.io/event_front/" + test.value.baseIndex + "?tipoPrueba=" + test.key;
 
-    console.log("show modal " + url);
+    console.log("show next qr " + url);
 
     document.getElementById("qrcodeNextChallengue").innerHTML = '';
     console.log("show modal ", document.getElementById("qrcodeNextChallengue"));
