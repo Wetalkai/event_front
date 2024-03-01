@@ -259,6 +259,7 @@ function showMainQR() {
     });
     qrcode.clear();
     qrcode.makeCode(url);
+    document.getElementById("qrContainer").style.display = 'block!important';
 }
 
 const testsArray = Object.entries(window.tests);
