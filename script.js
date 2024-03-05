@@ -9,6 +9,7 @@ var domain = ""
 const hostname = window.location.hostname;
 const port = window.location.port; // Extrae el puerto
 var tipoPrueba
+var cameraSelected = "user";
 if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWith("192.")) {
     // Si se está ejecutando en localhost o en una red local
     //domainHttp = `http://${hostname}:${port || '3008'}`;
@@ -142,7 +143,15 @@ document.addEventListener('DOMContentLoaded', function () {
         script.onerror = () => console.error(`Error al cargar el script: ${window.tests[tipoPrueba].helper}`);
         document.head.appendChild(script);
     }
-
+    turnVideo(handleVideo(cameraSelected));
+    /*
+        // Iniciar la webcam
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                document.getElementById('webcam').srcObject = stream;
+            })
+            .catch(console.error);
+            */
 })
 
 // Botón enviar: Envía la foto al servidor y oculta los controles
@@ -168,62 +177,56 @@ document.getElementById('send').addEventListener('click', function () {
         formData.append('tipoPrueba', tipoPrueba);
         console.log('tipoPrueba', tipoPrueba);
         // Asume que el servidor está corriendo en localhost:3000 y acepta POST en /upload
-        for (var i = 0; i < 20; i++) {
-            fetch(domain + '/upload', { // Asegúrate de usar el puerto correcto que estés escuchando
-                method: 'POST',
-                body: formData,
-            }).then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    if (data.ok) {
-                        document.getElementById("loadingContainer").style.left = "200%";
-                        const photoControls = document.getElementById('photoControls');
-                        photoControls.style.display = 'none';
-
-                        document.getElementById('descriptionTest').innerHTML = "Gracias! Tu foto ha sido enviada. Consulta la pantalla para ver el resultado.";
-                        document.getElementById('loadModel').style.display = 'block';
-                        // this.style.display = 'none'; // Ocultar botón de captura
-                        document.getElementById('capture').style.display = 'none';
-                        document.getElementById('toggleCamera').style.display = 'none';
-                        //document.getElementById('uploadPhoto').style.display = 'none';
-
-                        if (tipoPrueba == "emojis") {
-                            document.getElementById('descriptionTest').style.fontSize = "20px";
-                        }
-                        /*
-                        // Descargar automáticamente la imagen en el dispositivo
-                        const url = URL.createObjectURL(blob); // 'blob' es el mismo que usaste para enviar
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'mi-imagen-descargada.jpg'; // El nombre deseado para el archivo descargado
-                        document.body.appendChild(a); // Agregar el enlace al documento
-                        a.click(); // Simular un clic en el enlace para iniciar la descarga
-                        document.body.removeChild(a); // Opcional: eliminar el enlace del documento
-                        URL.revokeObjectURL(url); // Liberar la URL del objeto una vez completado
-                        */
-                    } else {
-                        console.log("data", data)
-                        alert('Error al enviar la foto, ', data.error)
-                        document.getElementById("loadingContainer").style.left = "200%";
-                    }
-                    // Opcional: Acciones posteriores al envío exitoso
-                })
-                .catch(data => {
+        //for (var i = 0; i < 20; i++) {
+        fetch(domain + '/upload', { // Asegúrate de usar el puerto correcto que estés escuchando
+            method: 'POST',
+            body: formData,
+        }).then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.ok) {
                     document.getElementById("loadingContainer").style.left = "200%";
-                    alert('Hubo un problema, intentalo más tarde')
+                    const photoControls = document.getElementById('photoControls');
+                    photoControls.style.display = 'none';
 
-                });
-        }
+                    document.getElementById('descriptionTest').innerHTML = "Gracias! Tu foto ha sido enviada. Consulta la pantalla para ver el resultado.";
+                    document.getElementById('loadModel').style.display = 'block';
+                    // this.style.display = 'none'; // Ocultar botón de captura
+                    document.getElementById('capture').style.display = 'none';
+                    document.getElementById('toggleCamera').style.display = 'none';
+                    //document.getElementById('uploadPhoto').style.display = 'none';
+
+                    if (tipoPrueba == "emojis") {
+                        document.getElementById('descriptionTest').style.fontSize = "20px";
+                    }
+                    /*
+                    // Descargar automáticamente la imagen en el dispositivo
+                    const url = URL.createObjectURL(blob); // 'blob' es el mismo que usaste para enviar
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'mi-imagen-descargada.jpg'; // El nombre deseado para el archivo descargado
+                    document.body.appendChild(a); // Agregar el enlace al documento
+                    a.click(); // Simular un clic en el enlace para iniciar la descarga
+                    document.body.removeChild(a); // Opcional: eliminar el enlace del documento
+                    URL.revokeObjectURL(url); // Liberar la URL del objeto una vez completado
+                    */
+                } else {
+                    console.log("data", data)
+                    alert('Error al enviar la foto, ', data.error)
+                    document.getElementById("loadingContainer").style.left = "200%";
+                }
+                // Opcional: Acciones posteriores al envío exitoso
+            })
+            .catch(data => {
+                document.getElementById("loadingContainer").style.left = "200%";
+                alert('Hubo un problema, intentalo más tarde')
+
+            });
+        //}
     }, 'image/jpeg', 0.95);
 });
 
 
-// Iniciar la webcam
-navigator.mediaDevices.getUserMedia({ video: true })
-    .then(stream => {
-        document.getElementById('webcam').srcObject = stream;
-    })
-    .catch(console.error);
 
 document.getElementById('loadModel').addEventListener('click', function () {
     // Crea el contenedor para el model-viewer si no existe
@@ -298,16 +301,6 @@ document.getElementById('loadModel').addEventListener('click', function () {
 */
 });
 
-function toggleCamera() {
-    useFrontCamera = !useFrontCamera; // Alternar entre true y false
-    getCameraStream().then(stream => {
-        currentStream = stream;
-        const videoElement = document.getElementById('webcam');
-        videoElement.srcObject = stream;
-    }).catch(error => {
-        console.error("Error al obtener acceso a la cámara: ", error);
-    });
-}
 
 function createTextImageAndConvertToBlob(text) {
     const canvas = document.createElement('canvas');
@@ -394,3 +387,74 @@ var tests = {
     }
 }
 */
+
+let useFrontCamera = true; // Comienza con la cámara trasera por defecto
+let currentStream = null; // Almacenar el stream actual para poder detenerlo más tarde
+
+// Función para obtener el stream de la cámara
+// Función para obtener el stream de la cámara
+async function getCameraStream() {
+    // Detener tracks del stream actual para liberar la cámara
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => { track.stop(); currentStream.removeTrack(track); });
+    }
+
+    // Definir las restricciones para solicitar el stream de video
+    // Definir las restricciones para solicitar el stream de video
+    const videoConstraints = {
+        width: { max: 1080 }, // Limitar el ancho máximo a 1080 píxeles
+        facingMode: useFrontCamera ? "user" : "environment"
+    };
+
+    const constraints = {
+        video: videoConstraints,
+        audio: false // Omitir audio
+    };
+
+    // Solicitar el stream de la cámara con las restricciones definidas
+    currentStream = await navigator.mediaDevices.getUserMedia(constraints); // Guardar el nuevo stream como el actual
+    return currentStream;
+}
+
+
+document.getElementById('toggleCamera').addEventListener('click', async function () {
+   if (cameraSelected == "user") {
+        cameraSelected = "environment";
+    } else {
+        cameraSelected = "user";
+    }
+    turnVideo(handleVideo(cameraSelected));
+});
+
+function handleVideo(cameraFacing) {
+    const constraints = {
+        video: {
+            facingMode: {
+                exact: cameraFacing
+            }
+        }
+    }
+    return constraints
+};
+
+function turnVideo(constraints) {
+
+    if (currentStream) {
+        currentStream.getTracks().forEach(track => { track.stop(); currentStream.removeTrack(track); });
+    }
+    let video;
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then((stream) => {
+            currentStream = stream
+            let video = document.getElementById('webcam')
+            video.srcObject = stream; // Actualizar el elemento de video con el nuevo stream
+            //video.srcObject = stream
+            video.play()
+            video.onloadeddata = () => {
+                ctx.height = video.videoHeight
+            }
+        }).catch((err) => {
+            alert(err)
+        });
+
+}
