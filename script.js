@@ -162,68 +162,70 @@ document.getElementById('send').addEventListener('click', function () {
         const messageText = document.getElementById('messageTextarea').value;
         createTextImageAndConvertToBlob(messageText);
     }
-    const canvas = document.getElementById('canvasPhoto');
-    canvas.toBlob(blob => {
-        const formData = new FormData();
-        formData.append('image', blob, 'foto.jpg');
+    setTimeout(() => {
+        const canvas = document.getElementById('canvasPhoto');
+        canvas.toBlob(blob => {
+            const formData = new FormData();
+            formData.append('image', blob, 'foto.jpg');
 
-        // Suponiendo que messageBlob es tu blob generado a partir del canvas de mensaje
-        // Asegúrate de que messageBlob esté disponible en este ámbito
-        formData.append('messageImage', messageBlob, 'mensaje.jpg');
+            // Suponiendo que messageBlob es tu blob generado a partir del canvas de mensaje
+            // Asegúrate de que messageBlob esté disponible en este ámbito
+            formData.append('messageImage', messageBlob, 'mensaje.jpg');
 
-        // Captura el parámetro 'tipoPrueba' de la URL
+            // Captura el parámetro 'tipoPrueba' de la URL
 
 
-        formData.append('tipoPrueba', tipoPrueba);
-        console.log('tipoPrueba', tipoPrueba);
-        // Asume que el servidor está corriendo en localhost:3000 y acepta POST en /upload
-        //for (var i = 0; i < 20; i++) {
-        fetch(domain + '/upload', { // Asegúrate de usar el puerto correcto que estés escuchando
-            method: 'POST',
-            body: formData,
-        }).then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (data.ok) {
-                    document.getElementById("loadingContainer").style.left = "200%";
-                    const photoControls = document.getElementById('photoControls');
-                    photoControls.style.display = 'none';
+            formData.append('tipoPrueba', tipoPrueba);
+            console.log('tipoPrueba', tipoPrueba);
+            // Asume que el servidor está corriendo en localhost:3000 y acepta POST en /upload
+            //for (var i = 0; i < 20; i++) {
+            fetch(domain + '/upload', { // Asegúrate de usar el puerto correcto que estés escuchando
+                method: 'POST',
+                body: formData,
+            }).then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    if (data.ok) {
+                        document.getElementById("loadingContainer").style.left = "200%";
+                        const photoControls = document.getElementById('photoControls');
+                        photoControls.style.display = 'none';
 
-                    document.getElementById('descriptionTest').innerHTML = "Gracias! Tu foto ha sido enviada. Consulta la pantalla para ver el resultado.";
-                    document.getElementById('loadModel').style.display = 'block';
-                    // this.style.display = 'none'; // Ocultar botón de captura
-                    document.getElementById('capture').style.display = 'none';
-                    document.getElementById('toggleCamera').style.display = 'none';
-                    //document.getElementById('uploadPhoto').style.display = 'none';
+                        document.getElementById('descriptionTest').innerHTML = "Gracias! Tu foto ha sido enviada. Consulta la pantalla para ver el resultado.";
+                        document.getElementById('loadModel').style.display = 'block';
+                        // this.style.display = 'none'; // Ocultar botón de captura
+                        document.getElementById('capture').style.display = 'none';
+                        document.getElementById('toggleCamera').style.display = 'none';
+                        //document.getElementById('uploadPhoto').style.display = 'none';
 
-                    if (tipoPrueba == "emojis") {
-                        document.getElementById('descriptionTest').style.fontSize = "20px";
+                        if (tipoPrueba == "emojis") {
+                            document.getElementById('descriptionTest').style.fontSize = "20px";
+                        }
+                        /*
+                        // Descargar automáticamente la imagen en el dispositivo
+                        const url = URL.createObjectURL(blob); // 'blob' es el mismo que usaste para enviar
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'mi-imagen-descargada.jpg'; // El nombre deseado para el archivo descargado
+                        document.body.appendChild(a); // Agregar el enlace al documento
+                        a.click(); // Simular un clic en el enlace para iniciar la descarga
+                        document.body.removeChild(a); // Opcional: eliminar el enlace del documento
+                        URL.revokeObjectURL(url); // Liberar la URL del objeto una vez completado
+                        */
+                    } else {
+                        console.log("data", data)
+                        alert('Error al enviar la foto, ', data.error)
+                        document.getElementById("loadingContainer").style.left = "200%";
                     }
-                    /*
-                    // Descargar automáticamente la imagen en el dispositivo
-                    const url = URL.createObjectURL(blob); // 'blob' es el mismo que usaste para enviar
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'mi-imagen-descargada.jpg'; // El nombre deseado para el archivo descargado
-                    document.body.appendChild(a); // Agregar el enlace al documento
-                    a.click(); // Simular un clic en el enlace para iniciar la descarga
-                    document.body.removeChild(a); // Opcional: eliminar el enlace del documento
-                    URL.revokeObjectURL(url); // Liberar la URL del objeto una vez completado
-                    */
-                } else {
-                    console.log("data", data)
-                    alert('Error al enviar la foto, ', data.error)
+                    // Opcional: Acciones posteriores al envío exitoso
+                })
+                .catch(data => {
                     document.getElementById("loadingContainer").style.left = "200%";
-                }
-                // Opcional: Acciones posteriores al envío exitoso
-            })
-            .catch(data => {
-                document.getElementById("loadingContainer").style.left = "200%";
-                alert('Hubo un problema, intentalo más tarde')
+                    alert('Hubo un problema, intentalo más tarde')
 
-            });
-        //}
-    }, 'image/jpeg', 0.95);
+                });
+            //}
+        }, 'image/jpeg', 0.95);
+    }, 800);
 });
 
 
@@ -418,7 +420,7 @@ async function getCameraStream() {
 
 
 document.getElementById('toggleCamera').addEventListener('click', async function () {
-   if (cameraSelected == "user") {
+    if (cameraSelected == "user") {
         cameraSelected = "environment";
     } else {
         cameraSelected = "user";
@@ -427,15 +429,21 @@ document.getElementById('toggleCamera').addEventListener('click', async function
 });
 
 function handleVideo(cameraFacing) {
-    const constraints = {
-        video: {
-            facingMode: {
-                exact: cameraFacing
-            }
+    let videoParams = (!isMobileDevice()) ? true : {
+        facingMode: {
+            exact: cameraFacing
         }
+    }
+    const constraints = {
+        video: videoParams
     }
     return constraints
 };
+
+
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
 
 function turnVideo(constraints) {
 

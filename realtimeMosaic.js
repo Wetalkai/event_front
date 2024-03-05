@@ -14,6 +14,7 @@ var currentRow = 0;
 let incX = 0;
 let incY = 0;
 let newPhotos = 0;
+let photosIncomingEnabled = false;
 if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWith("192.")) {
     // Si se está ejecutando en localhost o en una red local
     //domainHttp = `http://${hostname}:${port || '3008'}`;
@@ -153,9 +154,14 @@ function getTranslation(inc = 0) {
 function createPreview(uris, index) {
     if (index >= uris.length) {
         isShowingNewPhotos = false;
-        document.getElementById('modelViewer').classList.remove('blur-on-hard');
+        if (document.getElementById('modelViewer').classList.contains('blur-on-hard')) {
+            document.getElementById('modelViewer').classList.remove('blur-on-hard');
+        }
+        if (document.getElementById('imageBackground').classList.contains('blur-off')) {
+            document.getElementById('imageBackground').classList.remove('blur-off');
+        }
+
         document.getElementById('modelViewer').classList.add('blur-off-hard');
-        document.getElementById('imageBackground').classList.remove('blur-on');
         document.getElementById('imageBackground').classList.add('blur-off');
         // document.getElementById('overlay').style.opacity = '0';
         return; // Termina la ejecución si ya no hay más imágenes para mostrar
@@ -243,40 +249,44 @@ function setupImage(img, side) {
 
 function onModelLoaded() {
     document.getElementById('modelViewer').removeEventListener('load', onModelLoaded);
-    const modelViewer = document.getElementById('modelViewer');
-    const newPhotoUris = [];
 
-    for (let i = modelViewer.model.materials.length - newPhotos * 2; i < modelViewer.model.materials.length; i++) {
-        const newPhotoUri = modelViewer.model.materials[i].pbrMetallicRoughness['baseColorTexture'].texture.source.uri;
-        console.log("New photo to show ", modelViewer.model.materials[i].pbrMetallicRoughness['baseColorTexture']);
-        newPhotoUris.push(domainHttp + "/baseGltf/" + newPhotoUri);
-    }
+    if (photosIncomingEnabled) {
+        const modelViewer = document.getElementById('modelViewer');
+        const newPhotoUris = [];
 
-    if (newPhotoUris.length > 0) {
-        createPreview(newPhotoUris, 0);
-    } else {
-        document.getElementById('overlay').style.opacity = '0'; // Ocultar overlay si no hay nuevas fotos
+        for (let i = modelViewer.model.materials.length - newPhotos * 2; i < modelViewer.model.materials.length; i++) {
+            const newPhotoUri = modelViewer.model.materials[i].pbrMetallicRoughness['baseColorTexture'].texture.source.uri;
+            console.log("New photo to show ", modelViewer.model.materials[i].pbrMetallicRoughness['baseColorTexture']);
+            newPhotoUris.push(domainHttp + "/baseGltf/" + newPhotoUri);
+        }
+
+        if (newPhotoUris.length > 0) {
+            createPreview(newPhotoUris, 0);
+        } else {
+            document.getElementById('overlay').style.opacity = '0'; // Ocultar overlay si no hay nuevas fotos
+        }
     }
 }
 
 function updateModelViewer(data) {
 
-    console.log("setting camera to spot")
-    isShowingNewPhotos = true;
-    const modelViewer = document.getElementById('modelViewer');
-    const imageBackground = document.getElementById('imageBackground');
-    if (modelViewer.classList.contains('blur-off-hard')) {
-        modelViewer.classList.remove('blur-off-hard');
-    }
-    if (imageBackground.classList.contains('blur-off')) {
-        imageBackground.classList.remove('blur-off');
-    }
+    if (photosIncomingEnabled) {
 
-    setTimeout(() => {
-        modelViewer.classList.add('blur-on-hard');
-        imageBackground.classList.add('blur-on');
-    }, 10)
+        isShowingNewPhotos = true;
+        const modelViewer = document.getElementById('modelViewer');
+        const imageBackground = document.getElementById('imageBackground');
+        if (modelViewer.classList.contains('blur-off-hard')) {
+            modelViewer.classList.remove('blur-off-hard');
+        }
+        if (imageBackground.classList.contains('blur-off')) {
+            imageBackground.classList.remove('blur-off');
+        }
 
+        setTimeout(() => {
+            modelViewer.classList.add('blur-on-hard');
+            imageBackground.classList.add('blur-on');
+        }, 10)
+    }
 
     // setCameraToHotspot(document.getElementById('modelViewer'))
     setTimeout(() => {
@@ -299,15 +309,7 @@ function updateModelViewer(data) {
 
         modelViewer.parentNode.replaceChild(newModelViewer, modelViewer);
 
-        // var translation = getTranslation(0);
-        // newModelViewer.updateHotspot({ name: "hotspot-visor", position: translation.join(' '), normal: "0 0 1" })
-        /*
-        setTimeout(() => {
-            restoreGeneralView(document.getElementById('modelViewer'))
-        }, 2000)
-        */
-
-    }, 200)
+    }, 550)
 
 }
 
@@ -342,7 +344,13 @@ function checkForUpdates() {
                 if (test)
                     showNextChallengueQR(test)
 */
-                newPhotos = data.count - lastCount;
+                if (lastCount == 0) {
+                    photosIncomingEnabled = false;
+                    newPhotos = 0;
+                } else {
+                    photosIncomingEnabled = true;
+                    newPhotos = data.count - lastCount;
+                }
                 console.log("newPhotos ", newPhotos)
                 lastCount = data.count;
                 console.log("updating cube count to")

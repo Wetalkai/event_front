@@ -15,9 +15,10 @@
     <button onclick="getCubesCount()">Obtener Cantidad de Cubos</button>
     <button onclick="getServerState()">Comprobar Estado del Servidor</button>
     <button onclick="showModel()">ShowModel</button>
+    <button onclick="downloadZip()">Download zip</button>
 
     <script>
-        const remoteDomain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
+        const remoteDomain = 'http://localhost:3008';// 'https://evento-silvia-bd9532c26bae.herokuapp.com';
         function resetServer() {
             fetch(remoteDomain + '/reset', { method: 'POST' })
                 .then(response => response.json())
@@ -37,6 +38,32 @@
                 .then(response => response.json())
                 .then(data => alert(data.message))
                 .catch(error => console.error('Error:', error));
+        }
+
+        function downloadZip() {
+            fetch(remoteDomain + '/downloadZip')
+                .then(response => {
+                    if (response.ok) return response.blob();
+                    throw new Error('La descarga no se pudo completar.');
+                })
+                .then(blob => {
+                    // Crear un enlace temporal para descargar el archivo
+                    const downloadUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = downloadUrl;
+                    // Especificar el nombre del archivo para la descarga
+                    a.download = 'images_and_model.zip';
+                    document.body.appendChild(a);
+                    a.click();
+                    // Limpiar: eliminar el enlace temporal y revocar el URL del objeto Blob
+                    window.URL.revokeObjectURL(downloadUrl);
+                    document.body.removeChild(a);
+                })
+                .catch(error => {
+                    console.error('Error al descargar el archivo:', error);
+                    alert('Error al descargar el archivo.');
+                });
         }
 
         function showModel() {
