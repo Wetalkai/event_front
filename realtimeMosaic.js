@@ -13,6 +13,7 @@ var totalCubos = 21;
 var currentRow = 0;
 let incX = 0;
 let incY = 0;
+let newPhotos = 0;
 if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWith("192.")) {
     // Si se está ejecutando en localhost o en una red local
     //domainHttp = `http://${hostname}:${port || '3008'}`;
@@ -23,12 +24,40 @@ if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWi
     extraDomain = "/event_front";
 }
 
+let isShowingNewPhotos = false;
 
-let lastCount = -1;
-
+let lastCount = 0;
+let isFullScreen = false;
+/*
 particlesJS.load('particles-js', 'particles.json', function () {
     console.log('callback - particles.js config loaded');
 });
+*/
+document.getElementById('goFullScreen').addEventListener('click', function () {
+    // Verificar si estamos actualmente en pantalla completa; si es así, salir de pantalla completa
+    if (document.fullscreenElement) {
+        if (document.exitFullscreen) {
+            document.exitFullscreen(); // Método estándar
+        } else if (document.mozCancelFullScreen) { /* Firefox */
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) { /* Chrome, Safari y Opera */
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE/Edge */
+            document.msExitFullscreen();
+        }
+    } else { // Entrar en pantalla completa
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen(); // Método estándar
+        } else if (document.documentElement.mozRequestFullScreen) { /* Firefox */
+            document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) { /* Chrome, Safari y Opera */
+            document.documentElement.webkitRequestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) { /* IE/Edge */
+            document.documentElement.msRequestFullscreen();
+        }
+    }
+});
+
 function setCameraToHotspot(modelViewer) {
     //modelViewer.setAttribute("interaction-prompt", "none");
     //modelViewer.removeAttribute('auto-rotate');
@@ -120,19 +149,144 @@ function getTranslation(inc = 0) {
     */
 
 }
+
+function createPreview(uris, index) {
+    if (index >= uris.length) {
+        isShowingNewPhotos = false;
+        document.getElementById('modelViewer').classList.remove('blur-on-hard');
+        document.getElementById('modelViewer').classList.add('blur-off-hard');
+        document.getElementById('imageBackground').classList.remove('blur-on');
+        document.getElementById('imageBackground').classList.add('blur-off');
+        // document.getElementById('overlay').style.opacity = '0';
+        return; // Termina la ejecución si ya no hay más imágenes para mostrar
+    }
+
+    // Definir las variables fuera de los bloques condicionales para ampliar su alcance
+    let imgLeft, imgRight, imgContainer;
+
+    // Crear y mostrar la imagen de la izquierda si hay imágenes disponibles
+    if (index < uris.length) {
+        const uriLeft = uris[index];
+        imgLeft = new Image(); // Ahora imgLeft está definida en el alcance superior
+        imgLeft.src = uriLeft;
+        imgLeft.style.width = "100%";
+        imgLeft.style.height = "70%";
+        imgLeft.style.position = "relative";
+        imgLeft.style.opacity = 1;
+
+
+        imgContainer = document.createElement('div');
+        setupImage(imgContainer, 'right');
+        imgContainer.appendChild(imgLeft);
+        document.body.appendChild(imgContainer);
+    }
+
+    // Crear y mostrar la imagen de la derecha si hay otra imagen disponible
+    if (index + 1 < uris.length) {
+        const uriRight = uris[index + 1];
+        imgRight = new Image(); // Ahora imgRight está definida en el alcance superior
+        imgRight.src = uriRight;
+        imgRight.style.width = "100%";
+        imgRight.style.height = "30%";
+        imgRight.style.position = "relative";
+        imgRight.style.opacity = 1;
+        //   setupImage(imgRight, 'left');
+        imgContainer.appendChild(imgRight);
+    }
+
+
+    // Esperar 2 segundos antes de mostrar las siguientes imágenes
+    setTimeout(() => {
+        if (imgContainer && document.body.contains(imgContainer)) {
+            document.body.removeChild(imgContainer); // Asegurar que imgLeft esté definida antes de intentar removerla
+        }
+
+        createPreview(uris, index + 2); // Incrementar el índice en 2 para las siguientes dos imágenes
+    }, 4200);
+}
+
+function setupImage(img, side) {
+    img.style.width = "50%";
+    img.style.height = "100%";
+    img.style.position = "fixed";
+    img.style.padding = "30px"
+    img.style.opacity = 0;
+    //img.style.top = 0
+    img.style.backgroundColor = "white";
+    img.style.display = "flex";
+    img.style.flexDirection = "column";
+    img.style.flexWrap = "nowrap";
+    img.style.justifyContent = "center";
+    img.style.alignItems = "stretch";
+    img.style.flexWrap = "nowrap";
+    img.style.boxShadow = "9px 14px 18px rgba(0, 0, 0, 1)";
+    img.style.borderRadius = "1%";
+
+    // img.style.left = side === 'left' ? "50%" : "auto"; // Ajustar según el lado
+    // img.style.right = side === 'right' ? "50%" : "auto"; // Ajustar según el lado
+    img.style.zIndex = "9999999999999";
+    //img.style.paddingLeft = "50%";
+    //img.style.transform = "translateX(100%)"; // Asegura que la imagen comience centrada horizontalmente
+
+
+    // Aplicar la animación correspondiente
+    if (side === 'right') {
+        img.style.animation = "slideFromTop 4s ease-in-out";
+    } else { // side === 'right'
+        // img.style.animation = "slideFromBottom 4s ease-in-out";
+    }
+}
+
+
+
+
+
+function onModelLoaded() {
+    document.getElementById('modelViewer').removeEventListener('load', onModelLoaded);
+    const modelViewer = document.getElementById('modelViewer');
+    const newPhotoUris = [];
+
+    for (let i = modelViewer.model.materials.length - newPhotos * 2; i < modelViewer.model.materials.length; i++) {
+        const newPhotoUri = modelViewer.model.materials[i].pbrMetallicRoughness['baseColorTexture'].texture.source.uri;
+        console.log("New photo to show ", modelViewer.model.materials[i].pbrMetallicRoughness['baseColorTexture']);
+        newPhotoUris.push(domainHttp + "/baseGltf/" + newPhotoUri);
+    }
+
+    if (newPhotoUris.length > 0) {
+        createPreview(newPhotoUris, 0);
+    } else {
+        document.getElementById('overlay').style.opacity = '0'; // Ocultar overlay si no hay nuevas fotos
+    }
+}
+
 function updateModelViewer(data) {
 
     console.log("setting camera to spot")
-    document.getElementById('overlay').style.opacity = '1';
+    isShowingNewPhotos = true;
+    const modelViewer = document.getElementById('modelViewer');
+    const imageBackground = document.getElementById('imageBackground');
+    if (modelViewer.classList.contains('blur-off-hard')) {
+        modelViewer.classList.remove('blur-off-hard');
+    }
+    if (imageBackground.classList.contains('blur-off')) {
+        imageBackground.classList.remove('blur-off');
+    }
+
+    setTimeout(() => {
+        modelViewer.classList.add('blur-on-hard');
+        imageBackground.classList.add('blur-on');
+    }, 10)
+
+
     // setCameraToHotspot(document.getElementById('modelViewer'))
     setTimeout(() => {
         console.log("loading model viewer")
-        const modelViewer = document.getElementById('modelViewer');
+
 
         modelViewer.setAttribute("src", domainHttp + "/baseGltf/modified_cube.gltf?time=" + new Date().getTime()); //;
         const newModelViewer = modelViewer.cloneNode(true);
         //newModelViewer.removeAttribute('auto-rotate');
-
+        console.log("newModelViewer ", newModelViewer)
         newModelViewer.setAttribute("interaction-prompt", "none");
         newModelViewer.setAttribute('auto-rotate', true);
 
@@ -141,6 +295,7 @@ function updateModelViewer(data) {
         newModelViewer.setAttribute('ar-modes', 'webxr scene-viewer quick-look');
         newModelViewer.setAttribute('shadow-intensity', '2');
 
+        newModelViewer.addEventListener('load', onModelLoaded);
 
         modelViewer.parentNode.replaceChild(newModelViewer, modelViewer);
 
@@ -151,16 +306,14 @@ function updateModelViewer(data) {
             restoreGeneralView(document.getElementById('modelViewer'))
         }, 2000)
         */
-        document.getElementById('overlay').style.opacity = '0';
-    }, 1500)
 
-    //newModelViewer.fieldOfView = '45deg';
-
-
+    }, 200)
 
 }
 
 function checkForUpdates() {
+    if (isShowingNewPhotos)
+        return;
     const url = domainHttp + "/getCount";
     //console.log("checkForUpdates, ", url)
     fetch(url)
@@ -184,6 +337,9 @@ function checkForUpdates() {
                 const test = getNextTest(data.lastTipoPrueba)
                 if (test)
                     showNextChallengueQR(test)
+
+                newPhotos = data.count - lastCount;
+                console.log("newPhotos ", newPhotos)
                 lastCount = data.count;
                 console.log("updating cube count to")
                 //document.getElementById('cubeCountId').innerText = "Cube count: " + data.count;
@@ -224,7 +380,18 @@ function checkForUpdates() {
         })
         .catch(console.error);
 }
-/*
+
+function getAllItems() {
+    const modelViewer = document.getElementById('modelViewer');
+    fetch(modelViewer.src)
+        .then(response => response.json())
+        .then(gltf => {
+            const nodes = gltf.nodes; // Obtener los nodos del GLTF
+            const lastNode = nodes[nodes.length - 1]; // Acceder al último nodo
+        })
+        .catch(error => console.error('Error al cargar el GLTF:', error));
+}
+
 function loadModel(src, data) {
     fetch(src)
         .then(response => response.json())
@@ -234,10 +401,10 @@ function loadModel(src, data) {
             const translation = lastNode.translation; // Obtener la propiedad de translation
             if (translation) {
                 const modelViewer = document.getElementById('modelViewer');
-                
+
                 const fila = Math.floor(lastCount / data.maxRowCubes); // Determina la fila actual basada en cuántos cubos se han generado
                 const posicionEnFila = lastCount % data.maxRowCubes; // Determina la posición del cubo dentro de la fila (0-4)
-                modelViewer.updateHotspot({name:"hotspot-visor", position:translation.join(' '), normal:"0 0 1"})
+                modelViewer.updateHotspot({ name: "hotspot-visor", position: translation.join(' '), normal: "0 0 1" })
             } else {
                 console.log('El último nodo no tiene propiedad de translation.');
             }
@@ -245,7 +412,7 @@ function loadModel(src, data) {
         .catch(error => console.error('Error al cargar el GLTF:', error));
 
 }
-*/
+
 function showMainQR() {
     var url = "http://wetalkai.github.io/event_front/finalModel.html";
 
@@ -276,10 +443,10 @@ function getNextTest(lastTipoPrueba) {
         // Verifica si el elemento encontrado es el último en el array
         if (index === testsArray.length - 1) {
             console.log('Es el último elemento');
-            showMainQR()
+
             return {
-                key: testsArray[testsArray.length-1][0], // La clave del objeto (nombre del test)
-                value: testsArray[testsArray.length-1][1], // El objeto que contiene los detalles del test
+                key: testsArray[testsArray.length - 1][0], // La clave del objeto (nombre del test)
+                value: testsArray[testsArray.length - 1][1], // El objeto que contiene los detalles del test
             };
         } else {
             // Si no es el último, muestra el siguiente elemento

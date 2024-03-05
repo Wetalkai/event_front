@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,28 +12,34 @@
     <script src="tipoPruebas.js"></script>
     <script src="toggle_camera.js"></script>
 </head>
+
 <body class="bg-dark text-white">
     <div class="container">
         <h1 id="titleTest" class="text-center my-4">Título de prueba</h1>
-        
+
         <!-- Espacio reservado para la imagen de la cámara -->
         <div class="d-flex justify-content-center">
             <div id="containerOfCamera" class="camera-container">
                 <button id="toggleCamera" class="btn btn-primary">
-                    <i class="fas fa-sync-alt"></i> 
+                    <i class="fas fa-sync-alt"></i>
                 </button>
                 <button id="capture" class="btn btn-primary">
                     <i class="fa fa-camera"></i>
                 </button>
+                <input type="file" id="uploadPhotoInput" accept="image/*" style="display:none;">
+                <button id="uploadPhotoBtn" class="btn btn-primary"
+                    onclick="document.getElementById('uploadPhotoInput').click();">
+                    <i class="fas fa-upload"></i>
+                </button>
                 <video id="webcam" autoplay playsinline></video>
-               
+
             </div>
         </div>
 
-        <p id="descriptionTest" class="text-center my-4"></p>   
+        <p id="descriptionTest" class="text-center my-4"></p>
         <!-- Botones de acción -->
         <div class="d-flex justify-content-around my-4">
-            <button id="loadModel" class="btn btn-success" style="display: none;">Progreso</button>
+            <button id="loadModel" class="btn btn-success" style="display: none;">Ver resultado aquí!</button>
         </div>
     </div>
 
@@ -47,7 +54,10 @@
                     <img id="capturedPhoto">
                     <!-- Textarea para el mensaje -->
                 </div>
-                <textarea id="messageTextarea" class="form-control mt-3" placeholder="Deja tu mensaje: Máximo 50 caracteres" maxlength="50" style="resize: none;display: none;"></textarea>
+
+                <textarea id="messageTextarea" class="form-control mt-3"
+                    placeholder="Deja tu mensaje: Máximo 50 caracteres" maxlength="50"
+                    style="resize: none;display: none;"></textarea>
                 <div class="modal-footer">
                     <button id="send" class="btn btn-primary">ENVIAR</button>
                 </div>
@@ -57,10 +67,10 @@
 
     <div id="loadingContainer" class="d-flex justify-content-center">
         <div id="loadingIcon" class="spinner-border" role="status">
-          <span class="visually-hidden">Cargando...</span>
+            <span class="visually-hidden">Cargando...</span>
         </div>
-      </div>
-      
+    </div>
+
 
     <canvas id="canvasPhoto" style="display:none;"></canvas>
 
@@ -69,4 +79,5 @@
     <script src="script.js"></script>
 
 </body>
+
 </html>

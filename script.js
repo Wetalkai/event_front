@@ -19,58 +19,87 @@ if (hostname === "localhost" || hostname.startsWith("127.") || hostname.startsWi
     domain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
 }
 var messageBlob = null;
+var usePhotoFromGallery = false;
 
 document.getElementById('capture').addEventListener('click', function () {
     const video = document.getElementById('webcam');
+    const canvas = document.createElement('canvas'); // Crea un canvas temporal para capturar la imagen
+    const context = canvas.getContext('2d');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Llamar a la función con la URL del canvas
+    processImageAndApplyEffects(canvas.toDataURL('image/png'));
+});
+
+
+function processImageAndApplyEffects(imageSource) {
     const canvas = document.getElementById('canvasPhoto');
-    const photoControls = document.getElementById('photoControls');
     const capturedPhoto = document.getElementById('capturedPhoto');
+    const photoControls = document.getElementById('photoControls');
+    const context = canvas.getContext('2d');
 
     if (tipoPrueba == "generica") {
         document.getElementById('messageTextarea').style.display = 'block';
     }
+    const image = new Image();
+    image.onload = function () {
+        // Ajustar el canvas al tamaño cuadrado necesario
+        const size = Math.min(image.width, image.height); // El lado más corto para el cuadrado
+        canvas.width = size;
+        canvas.height = size;
 
-    // Determinar las dimensiones para el recorte centrado
-    const videoWidth = video.videoWidth;
-    const videoHeight = video.videoHeight;
-    const size = Math.min(videoWidth, videoHeight); // El lado más corto para el cuadrado
+        // Calcular el inicio del recorte para centrarlo
+        const startX = (image.width - size) / 2;
+        const startY = (image.height - size) / 2;
 
-    // Ajustar el canvas al tamaño cuadrado necesario
-    canvas.width = size;
-    canvas.height = size;
+        // Recortar la imagen centrada en el canvas
+        context.drawImage(image, startX, startY, size, size, 0, 0, canvas.width, canvas.height);
 
-    // Calcular el inicio del recorte para centrarlo
-    const startX = (videoWidth - size) / 2;
-    const startY = (videoHeight - size) / 2;
+        // Crear un gradiente radial para el efecto de iluminación
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.max(canvas.width, canvas.height) / 2;
 
-    // Obtener el contexto y recortar la imagen del video centrada en el canvas
-    const context = canvas.getContext('2d');
-    context.drawImage(video, startX, startY, size, size, 0, 0, canvas.width, canvas.height);
+        const gradient = context.createRadialGradient(centerX, centerY, radius / 10, centerX, centerY, radius);
+        gradient.addColorStop(0, 'rgba(255, 255, 100, 0.2)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
-    // Crear un gradiente radial para el efecto de iluminación
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const radius = Math.max(canvas.width, canvas.height) / 2; // El radio debe ser suficiente para cubrir el centro
+        // Aplicar el gradiente sobre la imagen
+        context.globalCompositeOperation = 'lighter';
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, canvas.width, canvas.height);
 
-    const gradient = context.createRadialGradient(centerX, centerY, radius / 10, centerX, centerY, radius);
-    gradient.addColorStop(0, 'rgba(255, 255, 100, 0.2)'); // Color amarillo claro y más sutil en el centro
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)'); // Transparencia hacia los bordes
+        // Convertir a imagen y mostrar
+        capturedPhoto.src = canvas.toDataURL('image/png');
 
-    // Aplicar el gradiente sobre la imagen
-    context.globalCompositeOperation = 'lighter'; // Modo de mezcla que ilumina los colores
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    // Convertir a imagen y mostrar
-    const photoURL = canvas.toDataURL('image/png');
-    capturedPhoto.src = photoURL;
+        // Mostrar los controles de la foto
+        photoControls.style.display = 'block';
+        document.getElementById('webcam').style.display = 'none';
+        document.getElementById('capture').style.display = 'none';
+        document.getElementById('toggleCamera').style.display = 'none';
+        document.getElementById('uploadPhotoBtn').style.display = 'none';
 
-    // Mostrar los controles de la foto y ocultar la webcam y el botón de captura
-    photoControls.style.display = 'block';
-    video.style.display = 'none';
-    this.style.display = 'none';
-    document.getElementById('toggleCamera').style.display = 'none';
+
+    };
+    image.src = imageSource;
+}
+
+
+document.getElementById('uploadPhotoInput').addEventListener('change', function (e) {
+    if (this.files && this.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            // Llamar a la función con la URL de la imagen cargada
+            processImageAndApplyEffects(e.target.result);
+        }
+
+        reader.readAsDataURL(this.files[0]);
+    }
 });
-
 
 
 // Botón cerrar: Oculta la imagen capturada y muestra la webcam de nuevo
@@ -79,18 +108,21 @@ document.getElementById('closeBtnPhoto').addEventListener('click', function () {
     const photoControls = document.getElementById('photoControls');
     const captureButton = document.getElementById('capture');
     const toggleCamera = document.getElementById('toggleCamera');
+    // const uploadPhoto = document.getElementById('uploadPhoto');
 
+    //uploadPhoto.style.display = 'block';
     photoControls.style.display = 'none';
     video.style.display = 'block';
     captureButton.style.display = 'block';
     toggleCamera.style.display = 'block';
+    document.getElementById('uploadPhotoBtn').style.display = 'block';
 });
 
 document.addEventListener('DOMContentLoaded', function () {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     tipoPrueba = urlParams.has('tipoPrueba') ? urlParams.get('tipoPrueba') : "generica";
-    
+
     if (!(tipoPrueba in window.tests)) {
         tipoPrueba = "generica";
     }
@@ -149,14 +181,25 @@ document.getElementById('send').addEventListener('click', function () {
                     photoControls.style.display = 'none';
 
                     document.getElementById('descriptionTest').innerHTML = "Gracias! Tu foto ha sido enviada. Consulta la pantalla para ver el resultado.";
-                    //document.getElementById('loadModel').style.display = 'block';
+                    document.getElementById('loadModel').style.display = 'block';
                     // this.style.display = 'none'; // Ocultar botón de captura
                     document.getElementById('capture').style.display = 'none';
                     document.getElementById('toggleCamera').style.display = 'none';
+                    //document.getElementById('uploadPhoto').style.display = 'none';
 
                     if (tipoPrueba == "emojis") {
                         document.getElementById('descriptionTest').style.fontSize = "20px";
                     }
+                    
+                    // Descargar automáticamente la imagen en el dispositivo
+                    const url = URL.createObjectURL(blob); // 'blob' es el mismo que usaste para enviar
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'mi-imagen-descargada.jpg'; // El nombre deseado para el archivo descargado
+                    document.body.appendChild(a); // Agregar el enlace al documento
+                    a.click(); // Simular un clic en el enlace para iniciar la descarga
+                    document.body.removeChild(a); // Opcional: eliminar el enlace del documento
+                    URL.revokeObjectURL(url); // Liberar la URL del objeto una vez completado
                 } else {
                     console.log("data", data)
                     alert('Error al enviar la foto, ', data.error)
@@ -169,7 +212,7 @@ document.getElementById('send').addEventListener('click', function () {
                 alert('Hubo un problema, intentalo más tarde')
 
             });
-    }, 'image/jpeg', 0.85);
+    }, 'image/jpeg', 0.95);
 });
 
 
@@ -182,7 +225,9 @@ navigator.mediaDevices.getUserMedia({ video: true })
 
 document.getElementById('loadModel').addEventListener('click', function () {
     // Crea el contenedor para el model-viewer si no existe
-
+    var url = "http://wetalkai.github.io/event_front/finalModel.html";
+    window.open(url, '_blank');
+    /*
     modelViewerContainer = document.createElement('div');
     modelViewerContainer.id = 'modelViewerContainer';
     modelViewerContainer.style.position = 'fixed';
@@ -248,7 +293,7 @@ document.getElementById('loadModel').addEventListener('click', function () {
 
     // Añade el contenedor al body del documento
     document.body.appendChild(modelViewerContainer);
-
+*/
 });
 
 function toggleCamera() {
@@ -316,9 +361,9 @@ function createTextImageAndConvertToBlob(text) {
         // Aquí puedes enviar el blob a un servidor o hacer lo que necesites con él
         // Mostrar la imagen en pantalla como prueba
         messageBlob = blob;
-       /* const img = document.createElement('img');
-        img.src = URL.createObjectURL(blob);
-        document.body.appendChild(img);*/
+        /* const img = document.createElement('img');
+         img.src = URL.createObjectURL(blob);
+         document.body.appendChild(img);*/
     }, 'image/jpeg');
 }
 

@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
     <script src="qrcode.min.js"></script>
     <script src="tipoPruebas.js"></script>
     <script src="particles.min.js"></script>
@@ -54,6 +56,7 @@
         padding: 20px 20px 40px 20px;
         border-radius: 10px;
         text-align: center;
+        z-index: 99999999;
     }
 
     #qrContainerNextChallengue {
@@ -68,6 +71,7 @@
         padding: 20px 20px 40px 20px;
         border-radius: 100px 100px 10px 10px;
         text-align: center;
+        z-index: 99999999;
     }
 
     #qrLabel {
@@ -182,7 +186,7 @@
         background-color: white;
         opacity: 0;
         transition: opacity 0.5s ease 0.5s;
-        z-index: 999999999;
+        z-index: 999999999999;
         pointer-events: none;
     }
 
@@ -194,6 +198,88 @@
         bottom: 0;
         opacity: 0.3;
 
+    }
+
+    @keyframes slideFromTop {
+        0% {
+            transform: translateY(-200%) scale(0.8);
+            opacity: 0;
+        }
+
+        30% {
+            transform: translateY(0%) scale(0.8);
+            opacity: 1;
+        }
+
+        80% {
+            transform: translateY(0%) scale(0.8);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(200%) scale(0.8);
+            opacity: 0;
+        }
+    }
+
+    @keyframes slideFromBottom {
+        0% {
+            transform: translateY(-200%) scale(0.8);
+            opacity: 0;
+        }
+
+        30% {
+            transform: translateY(0%) scale(0.8);
+            opacity: 1;
+        }
+
+        80% {
+            transform: translateY(0%) scale(0.8);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(200%) scale(0.8);
+            opacity: 0;
+        }
+    }
+
+    .blur-on {
+        filter: blur(10px);
+        transition: filter 0.5s ease 0.5s;
+        /* Aplica un desenfoque de 5px */
+    }
+
+    .blur-off {
+        filter: blur(0px);
+        transition: filter 0.5s ease 0.5s;
+        /* Elimina el efecto de desenfoque */
+    }
+
+    .blur-on-hard {
+        filter: blur(20px);
+        opacity: 0;
+        transition: filter 0.5s ease 0.5s, opacity 0.5s ease 0.5s;
+        /* Aplica un desenfoque de 5px */
+    }
+
+    .blur-off-hard {
+        filter: blur(0px);
+        opacity: 1;
+        transition: filter 0.5s ease 0.5s, opacity 0.5s ease 0.5s;
+        /* Elimina el efecto de desenfoque */
+    }
+    #goFullScreen {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background-color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 20px;
+        cursor: pointer;
+        z-index: 999999999999;
     }
 </style>
 
@@ -211,15 +297,18 @@
 
 
     </model-viewer>
-    <div id="qrContainer" style="display: none;">
+    <div id="qrContainer">
         <div id="qrcode"></div>
         <label id="qrLabel">Llévame contigo!</label>
     </div>
     <div id="qrContainerNextChallengue">
-        <label id="qrLabelNextPhoto">Siguiente Foto!</label>
+        <label id="qrLabelNextPhoto">Envía una foto!</label>
         <div id="qrcodeNextChallengue"></div>
 
     </div>
+
+    <button id="goFullScreen"><i class="fas fa-expand"></i></button>
+
 
 </body>
 <script src="realtimeMosaic.js"></script>
