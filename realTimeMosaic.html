@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-
+    <link rel="stylesheet" href="toast/toastr.css">
     <script src="qrcode.min.js"></script>
     <script src="tipoPruebas.js"></script>
     <script src="particles.min.js"></script>
@@ -60,18 +60,19 @@
     }
 
     #qrContainerNextChallengue {
-        bottom: 0;
-        left: 100px;
+        top: 0;
+        right: 100px;
         width: 150px;
         height: 150px;
         position: absolute;
         /* transform: translate(-50%, -100%); */
         background-color: white;
         display: inline-block;
-        padding: 20px 20px 40px 20px;
-        border-radius: 100px 100px 10px 10px;
+        padding: 10px 20px 50px 20px;
+        border-radius: 10px 10px 100px 100px;
         text-align: center;
         z-index: 99999999;
+        box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
     }
 
     #qrLabel {
@@ -88,7 +89,8 @@
         font-size: 15px;
         text-align: center;
         vertical-align: super;
-        top: 10px;
+        top: 5px;
+        position: relative;
         /* margin: 100px; */
     }
 
@@ -269,6 +271,7 @@
         transition: filter 0.5s ease 0.5s, opacity 0.5s ease 0.5s;
         /* Elimina el efecto de desenfoque */
     }
+
     #goFullScreen {
         position: absolute;
         bottom: 10px;
@@ -289,26 +292,28 @@
     <div id="overlay"></div>
     <!--button id="updateButton" onclick="checkForUpdates()">Update</button>
     <label id="cubeCountId">Cube count</label-->
-    <model-viewer id="modelViewer" src="baseGltf/empty2.glb" auto-rotate camera-controls
-        environment-image="st_peters_square_night_2k.hdr">
+    <model-viewer id="modelViewer" src="baseGltf/photo_base.glb" auto-rotate camera-controls
+        environment-image="st_peters_square_night_2k.hdr" >
         <!--button id="hotSpotButton" class="hotspot" slot="hotspot-visor" data-position="0 0 0" data-normal="0 0 1">
             <span>?</span>
         </button-->
 
 
     </model-viewer>
-    <div id="qrContainer">
+    <div id="qrContainer" style="display: none;">
         <div id="qrcode"></div>
         <label id="qrLabel">Llévame contigo!</label>
     </div>
     <div id="qrContainerNextChallengue">
-        <label id="qrLabelNextPhoto">Envía una foto!</label>
+        
         <div id="qrcodeNextChallengue"></div>
+        <label id="qrLabelNextPhoto">Envía una foto!</label>
 
     </div>
 
     <button id="goFullScreen"><i class="fas fa-expand"></i></button>
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="toast/toastr.min.js"></script>
 
 </body>
 <script src="realtimeMosaic.js"></script>

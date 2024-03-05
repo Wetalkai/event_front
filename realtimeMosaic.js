@@ -312,6 +312,7 @@ function updateModelViewer(data) {
 }
 
 function checkForUpdates() {
+
     if (isShowingNewPhotos)
         return;
     const url = domainHttp + "/getCount";
@@ -325,19 +326,22 @@ function checkForUpdates() {
                 lastCount = 0;
                 // document.getElementById('modelViewer').updateHotspot({ name: "hotspot-visor", position: "0 0 0", normal: "0 0 1" })
                 //const test = getNextTest(data.count)
+                /*
                 showNextChallengueQR({
                     key: testsArray[0][0], // La clave del objeto (nombre del test)
                     value: testsArray[0][1], // El objeto que contiene los detalles del test
                 })
+                */
 
             } else if (data.ok && data.count > lastCount) {
                 //console.log(data.count, ", ", testsArray.length)
 
                 console.log("tipo prueba ", data.lastTipoPrueba)
+                /*
                 const test = getNextTest(data.lastTipoPrueba)
                 if (test)
                     showNextChallengueQR(test)
-
+*/
                 newPhotos = data.count - lastCount;
                 console.log("newPhotos ", newPhotos)
                 lastCount = data.count;
@@ -378,7 +382,13 @@ function checkForUpdates() {
                 */
             }
         })
-        .catch(console.error);
+        .catch(error => {
+            console.error('Error al consultar el servidor:', error);
+            toastr.options = {
+                positionClass: 'toast-top-left',
+            };
+            toastr.info('PROBLEMA DE RED', ' Intentando de nuevo...')
+        });
 }
 
 function getAllItems() {
@@ -508,10 +518,27 @@ function showNextChallengueQR(test) {
     qrcode.makeCode(url);
 }
 
+function showDefaultChallenge() {
 
 
+    var url = "https://wetalkai.github.io/event_front/index_normal?tipoPrueba=generica";
+
+
+
+    document.getElementById("qrcodeNextChallengue").innerHTML = '';
+    console.log("show modal ", document.getElementById("qrcodeNextChallengue"));
+
+    var qrcode = new QRCode(document.getElementById("qrcodeNextChallengue"), {
+        width: 150,
+        height: 150
+    });
+    qrcode.clear();
+    qrcode.makeCode(url);
+}
+
+showDefaultChallenge();
 if (!isMobileDevice()) {
-    showMainQR();
+    //showMainQR();
     //showNextChallengueQR();
 } else {
     document.getElementById("qrcode").style.display = 'none';
