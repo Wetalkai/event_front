@@ -136,6 +136,20 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('descriptionTest').style.fontSize = "100px";
     }
 
+    document.getElementById('enviarOtraFoto').addEventListener('click', function () {
+        document.getElementById('loadModel').style.display = 'none';
+        document.getElementById('enviarOtraFoto').style.display = 'none';
+        // this.style.display = 'none'; // Ocultar botón de captura
+        document.getElementById('capture').style.display = 'block';
+        document.getElementById('toggleCamera').style.display = 'block';
+       
+        document.getElementById('webcam').style.display = 'block';
+        document.getElementById('uploadPhotoBtn').style.display = 'block';
+        document.getElementById('messageTextarea').value = "";
+        document.getElementById('messageTextarea').placeHolder = "Deja tu mensaje: Máximo 50 caracteres";
+        //document.getElementById('uploadPhoto').style.display = 'none';
+    });
+
     if (window.tests[tipoPrueba].helper) {
         const script = document.createElement('script');
         script.src = window.tests[tipoPrueba].helper;
@@ -192,6 +206,7 @@ document.getElementById('send').addEventListener('click', function () {
 
                         document.getElementById('descriptionTest').innerHTML = "Gracias! Tu foto ha sido enviada. Consulta la pantalla para ver el resultado.";
                         document.getElementById('loadModel').style.display = 'block';
+                        document.getElementById('enviarOtraFoto').style.display = 'block';
                         // this.style.display = 'none'; // Ocultar botón de captura
                         document.getElementById('capture').style.display = 'none';
                         document.getElementById('toggleCamera').style.display = 'none';
