@@ -172,17 +172,25 @@ function createPreview(uris, index) {
 
     // Crear y mostrar la imagen de la izquierda si hay imágenes disponibles
     if (index < uris.length) {
+
+        imgContainer = document.createElement('div');
+        imgContainer.classList.add('polaroid');
+        imgContainer.style.animation = "slideFromTop 4s ease-in-out";
+        imgContainer.style.opacity = 0;
+
         const uriLeft = uris[index];
         imgLeft = new Image(); // Ahora imgLeft está definida en el alcance superior
         imgLeft.src = uriLeft;
+        imgLeft.classList.add('photo');
+        /*
         imgLeft.style.width = "100%";
         imgLeft.style.height = "70%";
         imgLeft.style.position = "relative";
         imgLeft.style.opacity = 1;
+        */
 
-
-        imgContainer = document.createElement('div');
-        setupImage(imgContainer, 'right');
+        
+       // setupImage(imgContainer, 'right');
         imgContainer.appendChild(imgLeft);
         document.body.appendChild(imgContainer);
     }
@@ -192,15 +200,17 @@ function createPreview(uris, index) {
         const uriRight = uris[index + 1];
         imgRight = new Image(); // Ahora imgRight está definida en el alcance superior
         imgRight.src = uriRight;
-        imgRight.style.width = "100%";
+        imgRight.classList.add('message');
+      /*  imgRight.style.width = "100%";
         imgRight.style.height = "30%";
         imgRight.style.position = "relative";
         imgRight.style.opacity = 1;
+        */
         //   setupImage(imgRight, 'left');
         imgContainer.appendChild(imgRight);
     }
 
-
+    
     // Esperar 2 segundos antes de mostrar las siguientes imágenes
     setTimeout(() => {
         if (imgContainer && document.body.contains(imgContainer)) {

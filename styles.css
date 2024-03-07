@@ -316,3 +316,24 @@ model-viewer {
   .camera-container {
     position: relative;
   }
+
+/* Estilo para el div que advierte al usuario */
+#rotateDeviceWarning {
+  display: none;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.8);
+  color: white;
+  text-align: center;
+  z-index: 1000; /* Asegúrate de que esté por encima de todo lo demás */
+  justify-content: center;
+  align-items: center;
+}
+
+/* Se muestra sólo cuando la clase .show está presente */
+.show {
+  display: flex !important;
+}

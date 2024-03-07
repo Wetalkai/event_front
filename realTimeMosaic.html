@@ -284,6 +284,37 @@
         cursor: pointer;
         z-index: 999999999999;
     }
+
+    .polaroid {
+        width: calc(90vh * 0.8);
+        height: 90vh;
+        background-color: white;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 1);
+        margin: auto;
+        position: fixed;
+        display: flex;
+        flex-direction: column;
+        border-radius: 10px;
+        padding: 10px;
+    }
+
+    .polaroid img {
+        max-width: 100%;
+        max-height: 100%;
+        margin: auto;
+        display: block;
+        padding: 5px;
+    }
+
+    .polaroid .photo {
+        flex: 1;
+        /* Toma todo el espacio disponible */
+    }
+
+    .polaroid .message {
+        height: 20vh;
+        /* Parte del mensaje */
+    }
 </style>
 
 <body class="bg-dark text-white">
@@ -293,7 +324,7 @@
     <!--button id="updateButton" onclick="checkForUpdates()">Update</button>
     <label id="cubeCountId">Cube count</label-->
     <model-viewer id="modelViewer" src="baseGltf/photo_base.glb" auto-rotate camera-controls
-        environment-image="st_peters_square_night_2k.hdr" >
+        environment-image="st_peters_square_night_2k.hdr">
         <!--button id="hotSpotButton" class="hotspot" slot="hotspot-visor" data-position="0 0 0" data-normal="0 0 1">
             <span>?</span>
         </button-->
@@ -305,7 +336,7 @@
         <label id="qrLabel">Llévame contigo!</label>
     </div>
     <div id="qrContainerNextChallengue">
-        
+
         <div id="qrcodeNextChallengue"></div>
         <label id="qrLabelNextPhoto">Envía una foto!</label>
 

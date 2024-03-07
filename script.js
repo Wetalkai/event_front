@@ -58,21 +58,21 @@ function processImageAndApplyEffects(imageSource) {
 
         // Recortar la imagen centrada en el canvas
         context.drawImage(image, startX, startY, size, size, 0, 0, canvas.width, canvas.height);
-
-        // Crear un gradiente radial para el efecto de iluminación
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = Math.max(canvas.width, canvas.height) / 2;
-
-        const gradient = context.createRadialGradient(centerX, centerY, radius / 10, centerX, centerY, radius);
-        gradient.addColorStop(0, 'rgba(255, 255, 100, 0.2)');
-        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-        // Aplicar el gradiente sobre la imagen
-        context.globalCompositeOperation = 'lighter';
-        context.fillStyle = gradient;
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
+        /*
+                // Crear un gradiente radial para el efecto de iluminación
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                const radius = Math.max(canvas.width, canvas.height) / 2;
+        
+                const gradient = context.createRadialGradient(centerX, centerY, radius / 10, centerX, centerY, radius);
+                gradient.addColorStop(0, 'rgba(255, 255, 100, 0.2)');
+                gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+                // Aplicar el gradiente sobre la imagen
+                context.globalCompositeOperation = 'lighter';
+                context.fillStyle = gradient;
+                context.fillRect(0, 0, canvas.width, canvas.height);
+        */
         // Convertir a imagen y mostrar
         capturedPhoto.src = canvas.toDataURL('image/png');
 
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // this.style.display = 'none'; // Ocultar botón de captura
         document.getElementById('capture').style.display = 'block';
         document.getElementById('toggleCamera').style.display = 'block';
-       
+
         document.getElementById('webcam').style.display = 'block';
         document.getElementById('uploadPhotoBtn').style.display = 'block';
         document.getElementById('messageTextarea').value = "";
@@ -481,3 +481,23 @@ function turnVideo(constraints) {
         });
 
 }
+
+function checkOrientation() {
+    // Comprobar si estamos en un dispositivo móvil
+    if (/Mobi|Tablet|iPad|iPhone/.test(navigator.userAgent)) {
+      if (window.innerHeight > window.innerWidth) {
+        // Si la altura es mayor que el ancho, entonces está en portrait
+        document.getElementById('rotateDeviceWarning').classList.add('show');
+      } else {
+        // Estamos en landscape
+        document.getElementById('rotateDeviceWarning').classList.remove('show');
+      }
+    }
+  }
+  
+  // Agregar event listener para cambios de orientación
+  window.addEventListener('orientationchange', checkOrientation);
+  
+  // Comprobar la orientación cuando se carga la página
+  window.addEventListener('load', checkOrientation);
+  
