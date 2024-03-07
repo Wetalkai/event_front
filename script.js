@@ -481,7 +481,7 @@ function turnVideo(constraints) {
         });
 
 }
-
+/*
 function checkOrientation() {
     // Comprobar si estamos en un dispositivo móvil
     if (/Mobi|Tablet|iPad|iPhone/.test(navigator.userAgent)) {
@@ -499,7 +499,7 @@ function checkOrientation() {
   
   // Agregar event listener para cambios de orientación
   window.addEventListener('orientationchange', checkOrientation);
-  
+  */
   // Comprobar la orientación cuando se carga la página
   //window.addEventListener('load', checkOrientation);
   
