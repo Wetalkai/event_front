@@ -487,10 +487,11 @@ function checkOrientation() {
     if (/Mobi|Tablet|iPad|iPhone/.test(navigator.userAgent)) {
       if (window.innerHeight > window.innerWidth) {
         // Si la altura es mayor que el ancho, entonces está en portrait
-        document.getElementById('rotateDeviceWarning').classList.add('show');
-      } else {
-        // Estamos en landscape
         document.getElementById('rotateDeviceWarning').classList.remove('show');
+      } else {
+        document.getElementById('rotateDeviceWarning').classList.add('show');
+        // Estamos en landscape
+        
       }
     }
   }
@@ -499,5 +500,5 @@ function checkOrientation() {
   window.addEventListener('orientationchange', checkOrientation);
   
   // Comprobar la orientación cuando se carga la página
-  window.addEventListener('load', checkOrientation);
+  //window.addEventListener('load', checkOrientation);
   
