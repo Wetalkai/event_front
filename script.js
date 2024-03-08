@@ -120,6 +120,15 @@ document.getElementById('closeBtnPhoto').addEventListener('click', function () {
 });
 
 document.addEventListener('DOMContentLoaded', function () {
+    if ('orientation' in screen && 'lock' in screen.orientation) {
+        screen.orientation.lock('portrait').then(() => {
+          console.log('Orientación bloqueada a portrait.');
+        }).catch((error) => {
+          console.warn('No se pudo bloquear la orientación:', error);
+        });
+      } else {
+        console.warn('La API de orientación de pantalla no está disponible en este navegador.');
+      }
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     tipoPrueba = urlParams.has('tipoPrueba') ? urlParams.get('tipoPrueba') : "generica";
@@ -192,7 +201,7 @@ document.getElementById('send').addEventListener('click', function () {
             formData.append('tipoPrueba', tipoPrueba);
             console.log('tipoPrueba', tipoPrueba);
             // Asume que el servidor está corriendo en localhost:3000 y acepta POST en /upload
-            for (var i = 0; i < 20; i++) {
+           // for (var i = 0; i < 20; i++) {
                 fetch(domain + '/upload', { // Asegúrate de usar el puerto correcto que estés escuchando
                     method: 'POST',
                     body: formData,
@@ -238,7 +247,7 @@ document.getElementById('send').addEventListener('click', function () {
                         alert('Hubo un problema, intentalo más tarde')
 
                     });
-            }
+           // }
         }, 'image/jpeg', 0.95);
     }, 800);
 });

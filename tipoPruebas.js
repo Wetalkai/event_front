@@ -98,9 +98,68 @@ window.tests = {
         url: "https://wetalkai.github.io/event_front?tipoPrueba=silvia"
     },*/
     generica: {
-        title: "Deja tu mensaje!",
+        title: "¡Deja tu mensaje!",
         description: "",
         baseIndex: "index_normal.html",
         url: "https://wetalkai.github.io/event_front?tipoPrueba=generica"
     }
 }
+
+window.retos = [
+    {
+        name: "Selfie sonriente",
+        description: "Encuentra a alguien que esté sonriendo y únete a su alegría con una selfie juntos.",
+    },
+    {
+        name: "Zapatos divertidos",
+        description: "Busca a alguien con zapatos divertidos o únicos y toma una foto de sus zapatos junto a los tuyos.",
+    },
+    {
+        name: "Sombras creativas",
+        description: "Usa las luces de la fiesta para crear formas divertidas con tus manos y las de otra persona. ¡Captura esas sombras!",
+    },
+    {
+        name: "Expresiones emoji",
+        description: "Elige un emoji con alguien y ambos intenten replicar la expresión del emoji en una foto.",
+    },
+    {
+        name: "Accesorios compartidos",
+        description: "Intercambia un accesorio divertido con alguien (como gafas de sol, collares, etc.) y tómate una foto juntos.",
+    },
+    {
+        name: "Dúo dinámico",
+        description: "Encuentra a tu 'gemelo' en la fiesta, alguien con una prenda de vestir similar a la tuya, y posen como un dúo dinámico.",
+    },
+    {
+        name: "Posturas de poder",
+        description: "Forma un equipo y hagan juntos una pose de superhéroes para una foto épica.",
+    },
+    {
+        name: "Fiesta de calcetines",
+        description: "Reúne a un pequeño grupo y toma una foto mostrando sus calcetines, ¡cuanto más coloridos y locos, mejor!",
+    },
+    {
+        name: "Risas contagiosas",
+        description: "Captura el momento en que estás haciendo reír a alguien con una anécdota o broma, mostrando las sonrisas genuinas.",
+    },
+    {
+        name: "Foto bomba amigable",
+        description: "Realiza una 'foto bomba' divertida y amigable en la foto de otra persona con su consentimiento, por supuesto.",
+    },
+    {
+        name: "Mascotas de fiesta",
+        description: "Si hay mascotas en la fiesta, toma una foto adorable de ti posando con la mascota de alguien más.",
+    },
+    {
+        name: "Danza congelada",
+        description: "En medio de la pista de baile, haz una pausa con alguien más para una 'foto congelada' en pleno movimiento.",
+    },
+    {
+        name: "Cocktail gemelo",
+        description: "Encuentra a alguien con la misma bebida que tú y brinden juntos en una foto.",
+    },
+    {
+        name: "Fotografía de moda improvisada",
+        description: "Elige un 'look' único de otro invitado y haz una mini sesión de fotos como si fuera una estrella de moda.",
+    }
+];
