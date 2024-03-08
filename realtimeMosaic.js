@@ -189,8 +189,8 @@ function createPreview(uris, index) {
         imgLeft.style.opacity = 1;
         */
 
-        
-       // setupImage(imgContainer, 'right');
+
+        // setupImage(imgContainer, 'right');
         imgContainer.appendChild(imgLeft);
         document.body.appendChild(imgContainer);
     }
@@ -201,16 +201,16 @@ function createPreview(uris, index) {
         imgRight = new Image(); // Ahora imgRight está definida en el alcance superior
         imgRight.src = uriRight;
         imgRight.classList.add('message');
-      /*  imgRight.style.width = "100%";
-        imgRight.style.height = "30%";
-        imgRight.style.position = "relative";
-        imgRight.style.opacity = 1;
-        */
+        /*  imgRight.style.width = "100%";
+          imgRight.style.height = "30%";
+          imgRight.style.position = "relative";
+          imgRight.style.opacity = 1;
+          */
         //   setupImage(imgRight, 'left');
         imgContainer.appendChild(imgRight);
     }
 
-    
+
     // Esperar 2 segundos antes de mostrar las siguientes imágenes
     setTimeout(() => {
         if (imgContainer && document.body.contains(imgContainer)) {
@@ -419,6 +419,78 @@ function getAllItems() {
         })
         .catch(error => console.error('Error al cargar el GLTF:', error));
 }
+let lastMAterialSelected = 0;
+document.addEventListener('keydown', async (event) => {
+    if (event.key === 'm' || event.key === 'M') {
+        const modelViewer = document.getElementById('modelViewer');
+        modelViewer.autoRotate = false;
+       // modelViewer.cameraOrbit = "45deg 55deg 5m";
+        //modelViewer.jumpCameraToGoal();
+
+        if (modelViewer.model && modelViewer.model.materials.length > 0) {
+            let materials = modelViewer.model.materials;
+            let delay = 50; // Tiempo de espera inicial entre cambios de material en milisegundos.
+            // Genera un número aleatorio para increment entre 0.5 y 2
+            let increment = Math.random() * (0.5 - 0.00001) + 0.00001;
+            let incrementFactor = Math.random() * (1.17 - 1.1) + 1.1;
+
+            const totalObjetos = Math.floor(Math.random() * ((materials.length * 2) - 10 + 1)) + 10;
+            let totalCambios = totalObjetos * 2; // Total de cambios basado en el número de objetos
+
+            let i = 0; // Índice para recorrer los materiales
+            while (true) {
+                if (delay > 1000) { // Condición para terminar el bucle
+                    console.log("Tiempo de espera excede 1 segundo, deteniendo el cambio de materiales.");
+                    // Marca los últimos dos materiales en verde y rompe el bucle
+                    if (i >= materials.length) i = 0; // Asegura que el índice vuelva al inicio si es necesario
+                    const lastIndex = (i - 2 + materials.length) % materials.length; // Calcula el último índice correctamente
+                    materials[lastIndex].pbrMetallicRoughness.setBaseColorFactor([1, 0, 0, 1]); // Último material en verde
+                    materials[(lastIndex + 1) % materials.length].pbrMetallicRoughness.setBaseColorFactor([1, 0, 0, 1]); // Penúltimo material en verde
+                    break;
+                }
+
+                // Asegúrate de volver al inicio si superas el número de materiales disponibles
+                if (i >= materials.length) i = 0;
+                if (i + 1 >= materials.length) i = 0; // Reinicia si se alcanza el final
+
+                // Cambia el color de los materiales actuales a verde, luego espera y los vuelve a blanco en la siguiente iteración
+                materials[i % materials.length].pbrMetallicRoughness.setBaseColorFactor([0, 1, 0, 1]);
+                materials[(i + 1) % materials.length].pbrMetallicRoughness.setBaseColorFactor([0, 1, 0, 1]);
+
+                await new Promise(resolve => setTimeout(resolve, delay));
+                materials[i % materials.length].pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]); // Vuelve al color original
+                materials[(i + 1) % materials.length].pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]); // Vuelve al color original
+                lastMAterialSelected = i;
+                delay += increment; // Incrementa el tiempo de espera para el próximo cambio
+                increment *= incrementFactor; // Aumenta el incremento para el siguiente ciclo
+                i += 2; // Avanza al siguiente par de materiales
+            }
+
+            // Espera 5 segundos con los últimos materiales en verde antes de cambiarlos a blanco
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            materials.forEach(material => {
+                //
+                material.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]); // Restablece todos los materiales a blanco
+            });
+
+            const mat1 = lastMAterialSelected % materials.length;
+            const mat2 = (lastMAterialSelected + 1) % materials.length;
+            const newPhotoUri1 = materials[mat1].pbrMetallicRoughness['baseColorTexture'].texture.source.uri;
+
+            const newPhotoUri2 = materials[mat2].pbrMetallicRoughness['baseColorTexture'].texture.source.uri;
+            createPreview([domainHttp + "/baseGltf/" + newPhotoUri1, domainHttp + "/baseGltf/" + newPhotoUri2], 0);
+            //createPreview
+            modelViewer.autoRotate = true;
+
+            // Después de esperar, toma una captura del modelo
+            //const dataUrl = modelViewer.toDataURL(); // Captura la imagen del modelo
+            //console.log(dataUrl); // Muestra la URL de la imagen en consola como ejemplo
+        } else {
+            console.log('El modelo aún no está cargado o no tiene materiales.');
+        }
+    }
+});
+
 
 function loadModel(src, data) {
     fetch(src)

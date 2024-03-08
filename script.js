@@ -192,53 +192,53 @@ document.getElementById('send').addEventListener('click', function () {
             formData.append('tipoPrueba', tipoPrueba);
             console.log('tipoPrueba', tipoPrueba);
             // Asume que el servidor está corriendo en localhost:3000 y acepta POST en /upload
-            //for (var i = 0; i < 20; i++) {
-            fetch(domain + '/upload', { // Asegúrate de usar el puerto correcto que estés escuchando
-                method: 'POST',
-                body: formData,
-            }).then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                    if (data.ok) {
-                        document.getElementById("loadingContainer").style.left = "200%";
-                        const photoControls = document.getElementById('photoControls');
-                        photoControls.style.display = 'none';
+            for (var i = 0; i < 20; i++) {
+                fetch(domain + '/upload', { // Asegúrate de usar el puerto correcto que estés escuchando
+                    method: 'POST',
+                    body: formData,
+                }).then(response => response.json())
+                    .then(data => {
+                        console.log(data);
+                        if (data.ok) {
+                            document.getElementById("loadingContainer").style.left = "200%";
+                            const photoControls = document.getElementById('photoControls');
+                            photoControls.style.display = 'none';
 
-                        document.getElementById('descriptionTest').innerHTML = "Gracias! Tu foto ha sido enviada. Consulta la pantalla para ver el resultado.";
-                        document.getElementById('loadModel').style.display = 'block';
-                        document.getElementById('enviarOtraFoto').style.display = 'block';
-                        // this.style.display = 'none'; // Ocultar botón de captura
-                        document.getElementById('capture').style.display = 'none';
-                        document.getElementById('toggleCamera').style.display = 'none';
-                        //document.getElementById('uploadPhoto').style.display = 'none';
+                            document.getElementById('descriptionTest').innerHTML = "Gracias! Tu foto ha sido enviada. Consulta la pantalla para ver el resultado.";
+                            document.getElementById('loadModel').style.display = 'block';
+                            document.getElementById('enviarOtraFoto').style.display = 'block';
+                            // this.style.display = 'none'; // Ocultar botón de captura
+                            document.getElementById('capture').style.display = 'none';
+                            document.getElementById('toggleCamera').style.display = 'none';
+                            //document.getElementById('uploadPhoto').style.display = 'none';
 
-                        if (tipoPrueba == "emojis") {
-                            document.getElementById('descriptionTest').style.fontSize = "20px";
+                            if (tipoPrueba == "emojis") {
+                                document.getElementById('descriptionTest').style.fontSize = "20px";
+                            }
+                            /*
+                            // Descargar automáticamente la imagen en el dispositivo
+                            const url = URL.createObjectURL(blob); // 'blob' es el mismo que usaste para enviar
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'mi-imagen-descargada.jpg'; // El nombre deseado para el archivo descargado
+                            document.body.appendChild(a); // Agregar el enlace al documento
+                            a.click(); // Simular un clic en el enlace para iniciar la descarga
+                            document.body.removeChild(a); // Opcional: eliminar el enlace del documento
+                            URL.revokeObjectURL(url); // Liberar la URL del objeto una vez completado
+                            */
+                        } else {
+                            console.log("data", data)
+                            alert('Error al enviar la foto, ', data.error)
+                            document.getElementById("loadingContainer").style.left = "200%";
                         }
-                        /*
-                        // Descargar automáticamente la imagen en el dispositivo
-                        const url = URL.createObjectURL(blob); // 'blob' es el mismo que usaste para enviar
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'mi-imagen-descargada.jpg'; // El nombre deseado para el archivo descargado
-                        document.body.appendChild(a); // Agregar el enlace al documento
-                        a.click(); // Simular un clic en el enlace para iniciar la descarga
-                        document.body.removeChild(a); // Opcional: eliminar el enlace del documento
-                        URL.revokeObjectURL(url); // Liberar la URL del objeto una vez completado
-                        */
-                    } else {
-                        console.log("data", data)
-                        alert('Error al enviar la foto, ', data.error)
+                        // Opcional: Acciones posteriores al envío exitoso
+                    })
+                    .catch(data => {
                         document.getElementById("loadingContainer").style.left = "200%";
-                    }
-                    // Opcional: Acciones posteriores al envío exitoso
-                })
-                .catch(data => {
-                    document.getElementById("loadingContainer").style.left = "200%";
-                    alert('Hubo un problema, intentalo más tarde')
+                        alert('Hubo un problema, intentalo más tarde')
 
-                });
-            //}
+                    });
+            }
         }, 'image/jpeg', 0.95);
     }, 800);
 });
@@ -490,16 +490,15 @@ function checkOrientation() {
         document.getElementById('rotateDeviceWarning').classList.add('show');
       } else {
         document.getElementById('rotateDeviceWarning').classList.remove('show');
-        
+
         // Estamos en landscape
-        
+
       }
     }
   }
-  
+
   // Agregar event listener para cambios de orientación
   window.addEventListener('orientationchange', checkOrientation);
   */
-  // Comprobar la orientación cuando se carga la página
-  //window.addEventListener('load', checkOrientation);
-  
+// Comprobar la orientación cuando se carga la página
+//window.addEventListener('load', checkOrientation);
