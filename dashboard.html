@@ -18,7 +18,7 @@
     <button onclick="downloadZip()">Download zip</button>
 
     <script>
-        const remoteDomain = 'http://localhost:3008';// 'https://evento-silvia-bd9532c26bae.herokuapp.com';
+        const remoteDomain = 'https://evento-silvia-bd9532c26bae.herokuapp.com';
         function resetServer() {
             fetch(remoteDomain + '/reset', { method: 'POST' })
                 .then(response => response.json())
