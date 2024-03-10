@@ -476,7 +476,7 @@ document.addEventListener('keydown', async (event) => {
             const mat1 = lastMAterialSelected % materials.length;
             const mat2 = (lastMAterialSelected + 1) % materials.length;
             const newPhotoUri1 = materials[mat1].pbrMetallicRoughness['baseColorTexture'].texture.source.uri;
-
+            console.log(materials[mat1])
             const newPhotoUri2 = materials[mat2].pbrMetallicRoughness['baseColorTexture'].texture.source.uri;
             createPreview([domainHttp + "/baseGltf/" + newPhotoUri1, domainHttp + "/baseGltf/" + newPhotoUri2], 0);
             //createPreview
