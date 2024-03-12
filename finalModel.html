@@ -57,7 +57,7 @@
             <div class="progress-bar hide" slot="progress-bar">
                 <div class="update-bar"></div>
             </div>
-            <button slot="ar-button" id="ar-button">
+            <button slot="ar-button" id="ar-button" style="z-index: 999999999999999999;">
                 View in your space
             </button>
             <div id="ar-prompt">
@@ -78,7 +78,7 @@
             function onStart(event) {
                 isDragging = true;
                 lastY = event.clientY || event.touches[0].clientY;
-                event.preventDefault();
+              //  event.preventDefault();
             }
 
             function onMove(event) {
