@@ -90,7 +90,7 @@
 
                 let currentCameraTarget = modelViewer.getCameraTarget();
                 // Ajusta esta línea según la sensibilidad deseada y la escala de tu modelo
-                let newCameraTargetY = currentCameraTarget.y + deltaY * 0.05;
+                let newCameraTargetY = currentCameraTarget.y + deltaY * 0.01;
                 let newCameraTargetZ = currentCameraTarget.z;
 
                 modelViewer.cameraTarget = `0m ${newCameraTargetY}m ${distance}m`;
