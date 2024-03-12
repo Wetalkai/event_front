@@ -48,11 +48,11 @@
 </style>
 
 <body style="background-color: rgb(39, 39, 39);">
-    
+
     <div class="container">
         <image id="imageBackground" src="clandestino_movil.jpg"></image>
-        <model-viewer src="finalModel/modified_cube.gltf" ar
-            ar-modes="scene-viewer quick-look webxr" camera-controls shadow-intensity="2" shadow-softness="1" min-camera-orbit="auto auto 2m" exposure="1"
+        <model-viewer id="modelViewer" src="finalModel/modelColumn.glb" ar ar-modes="scene-viewer quick-look webxr" interaction-prompt="none"
+            camera-controls shadow-intensity="2" shadow-softness="1" min-camera-orbit="auto auto 2m" exposure="1"
             tone-mapping="commerce" environment-image="legacy" style="position: absolute;width: 100%;height: 100%;">
             <div class="progress-bar hide" slot="progress-bar">
                 <div class="update-bar"></div>
@@ -65,5 +65,70 @@
             </div>
         </model-viewer>
     </div>
-    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let isDragging = false;
+            let lastY = 0;
+
+            const modelViewer = document.getElementById('modelViewer');
+
+            modelViewer.cameraTarget = `0m 0m 1m`;
+            modelViewer.cameraOrbit = `0m 0m 1m`;
+
+            function onStart(event) {
+                isDragging = true;
+                lastY = event.clientY || event.touches[0].clientY;
+                event.preventDefault();
+            }
+
+            function onMove(event) {
+                if (!isDragging) return;
+
+                let y = event.clientY || event.touches[0].clientY;
+                let deltaY = y - lastY;
+                lastY = y;
+
+                let currentCameraTarget = modelViewer.getCameraTarget();
+                // Ajusta esta línea según la sensibilidad deseada y la escala de tu modelo
+                let newCameraTargetY = currentCameraTarget.y + deltaY * 0.05;
+                let newCameraTargetZ = currentCameraTarget.z;
+
+                modelViewer.cameraTarget = `0m ${newCameraTargetY}m ${distance}m`;
+                modelViewer.cameraOrbit = `0m ${newCameraTargetY}m ${distance}m`;
+
+                event.preventDefault();
+            }
+
+            function calculateCameraDistance(modelWidth, fov) {
+                // Asumimos que el fov está en grados y necesitamos convertirlo a radianes
+                let fovInRadians = fov * (Math.PI / 180)/2;
+
+                // Usamos la relación trigonométrica para calcular la distancia
+                // necesaria para tener el modelo completamente en vista a lo ancho
+                // Tan(fov/2) = (modelWidth/2) / distance
+                let distance = (modelWidth / 2) / Math.tan(fovInRadians / 2);
+
+                return distance;
+            }
+
+            // Usa esta función para ajustar la distancia de la cámara cuando el ancho del modelo es conocido
+            let modelWidth = 1; // Asume el ancho de tu modelo aquí, en metros
+            let fov = 45; // El FOV de tu <model-viewer>, que es 45 grados por defecto
+            let distance = calculateCameraDistance(modelWidth, fov);
+
+            function onEnd(event) {
+                isDragging = false;
+            }
+
+            // Eventos de touch
+            modelViewer.addEventListener('touchstart', onStart);
+            modelViewer.addEventListener('touchmove', onMove);
+            modelViewer.addEventListener('touchend', onEnd);
+
+            // Eventos de mouse
+            modelViewer.addEventListener('mousedown', onStart);
+            document.addEventListener('mousemove', onMove); // Añadido al documento para permitir arrastrar fuera del modelo
+            document.addEventListener('mouseup', onEnd);
+        });
+    </script>
 </body>
